@@ -1,0 +1,34 @@
+{
+  "glyphs": {
+    "N": {
+      "ha": 722,
+      "x_min": 76,
+      "x_max": 646,
+      "o": "m 76 0 l 76 718 l 194 718 l 194 246 q 194 170 193 119 q 191 82 194 58 q 196 82 193 82 q 200 82 198 82 q 204 85 202 82 q 210 92 206 87 q 219 106 214 96 q 232 130 224 116 l 528 718 l 646 718 l 646 0 l 528 0 l 528 483 q 529 550 528 592 q 532 608 530 585 q 534 625 533 619 q 528 614 532 620 q 519 598 524 607 q 509 579 514 589 q 498 557 504 569 l 194 0 l 76 0 z "
+    }
+  },
+  "familyName": "Helvetiker",
+  "ascender": 750,
+  "descender": -250,
+  "underlinePosition": -100,
+  "underlineThickness": 50,
+  "boundingBox": {
+    "yMin": -250,
+    "xMin": -168,
+    "yMax": 750,
+    "xMax": 1000
+  },
+  "resolution": 1000,
+  "original_font_information": {
+    "format": 0,
+    "copyright": "Copyright (c) 1985, 1987, 1989, 1990 Adobe Systems Incorporated.  All rights reserved.Helvetica is a trademark of Linotype AG and/or its subsidiaries.",
+    "fontFamily": "Helvetiker",
+    "fontSubfamily": "Regular",
+    "uniqueID": "Helvetiker Regular",
+    "fullName": "Helvetiker Regular",
+    "version": "Version 1.00 2004 initial release",
+    "postScriptName": "Helvetiker-Regular"
+  },
+  "cssFontWeight": "normal",
+  "cssFontStyle": "normal"
+}
