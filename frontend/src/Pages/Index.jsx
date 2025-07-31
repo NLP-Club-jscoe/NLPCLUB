@@ -7,12 +7,13 @@ import VideoSection from "../assets/components/VideoSection";
 import TestimonialsSection from "../assets/components/TestimonialsSection";
 import Footer from "../assets/components/Footer";
 import HeaderFrame from "../assets/components/HeaderFrame"
+import Head from "../assets/components/Head"
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen " style={{ backgroundColor: '#FFF8F0',fontFamily: 'StencilFont' }}>
       <Header />
-     <HeaderFrame/>
+ <Head></Head>
 <HeroSection></HeroSection>
       <AboutSection />
       <FeaturesSection />
