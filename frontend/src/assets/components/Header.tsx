@@ -5,6 +5,7 @@ import { Menu, X, Brain, ChevronDown } from 'lucide-react';
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true); // Start with dark mode
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,65 +15,128 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Simplified theme detection - checks for background color to determine theme
+  useEffect(() => {
+    const detectTheme = () => {
+      // Method 1: Check if HeaderFrame container exists and its background
+      const headerFrameContainer = document.querySelector('[style*="background"]');
+      if (headerFrameContainer) {
+        const bgStyle = headerFrameContainer.style.backgroundColor;
+        const isDark = bgStyle.includes('black') || bgStyle.includes('rgb(0, 0, 0)');
+        setIsDarkMode(isDark);
+      }
+      
+      // Method 2: Check for theme toggle button state
+      const themeButton = document.querySelector('[aria-label*="Switch to"]');
+      if (themeButton) {
+        const ariaLabel = themeButton.getAttribute('aria-label');
+        const isDark = ariaLabel.includes('light mode'); // If it says "switch to light", we're in dark
+        setIsDarkMode(isDark);
+      }
+
+      // Method 3: Look for theme indicator in DOM
+      const body = document.body;
+      const computedStyle = window.getComputedStyle(body);
+      const bgColor = computedStyle.backgroundColor;
+      if (bgColor === 'rgb(0, 0, 0)' || bgColor === 'black') {
+        setIsDarkMode(true);
+      } else if (bgColor.includes('255') || bgColor === 'white') {
+        setIsDarkMode(false);
+      }
+    };
+
+    // Initial detection
+    detectTheme();
+    
+    // Check theme every 100ms for immediate response
+    const interval = setInterval(detectTheme, 100);
+    
+    // Also listen for clicks on theme toggle button
+    const handleThemeButtonClick = () => {
+      setTimeout(detectTheme, 50); // Small delay to let theme change take effect
+    };
+    
+    document.addEventListener('click', handleThemeButtonClick);
+    
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('click', handleThemeButtonClick);
+    };
+  }, []);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
     setIsMobileMenuOpen(false);
   };
 
+  // Theme-aware styles
+  const themeStyles = {
+    headerBg: isDarkMode 
+      ? 'bg-black/10 backdrop-blur-xl border-b border-white/10 shadow-lg'
+      : 'bg-white/10 backdrop-blur-xl border-b border-black/10 shadow-lg',
+    textColor: isDarkMode ? 'text-white' : 'text-gray-900',
+    logoText: isDarkMode ? 'text-white' : 'text-gray-900',
+    hoverColor: isDarkMode ? 'hover:text-gray-300 hover:scale-115' : 'hover:text-gray-700 hover:scale-115',
+    buttonBg: isDarkMode 
+      ? 'bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-sm' 
+      : 'bg-white/20 text-gray-900 hover:bg-white/30 border border-gray-900/30 backdrop-blur-sm',
+    mobileBg: isDarkMode 
+      ? 'bg-black/20 backdrop-blur-xl border border-white/10 shadow-2xl' 
+      : 'bg-white/20 backdrop-blur-xl border border-gray-900/10 shadow-2xl',
+    iconColor: isDarkMode ? 'text-white' : 'text-gray-900',
+    logoIconBg: isDarkMode ? 'bg-blue-600/80 backdrop-blur-sm' : 'bg-blue-500/80 backdrop-blur-sm'
+  };
+
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled 
-          ? 'glass-card backdrop-blur-xl' 
-          : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${themeStyles.headerBg}`}
     >
-      <nav className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-gradient-primary">
+      <nav className="container mx-auto px-6 py-3">
+        <div className="flex items-center justify-center">
+          {/* Logo on the left */}
+          <div className="flex items-center space-x-3 absolute left-6">
+            <div className={`p-2 rounded-xl ${themeStyles.logoIconBg} shadow-lg`}>
               <Brain className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold gradient-text">NLP Club</span>
+            <span className={`text-xl font-bold ${themeStyles.logoText} drop-shadow-sm`}>NLP Club</span>
           </div>
 
-          {/* Desktop Navigation */}
+          {/* Centered Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <button 
               onClick={() => scrollToSection('home')}
-              className="text-foreground hover:text-primary transition-colors"
+              className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-6x00 ease-out text-lg font-bold`}
             >
               Home
             </button>
             <button 
               onClick={() => scrollToSection('about')}
-              className="text-foreground hover:text-primary transition-colors"
+              className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-600 ease-out text-lg font-bold`}
             >
               About
             </button>
             <button 
               onClick={() => scrollToSection('features')}
-              className="text-foreground hover:text-primary transition-colors"
+              className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-600 ease-out text-lg font-bold`}
             >
               Features
             </button>
             <button 
               onClick={() => scrollToSection('projects')}
-              className="text-foreground hover:text-primary transition-colors"
+              className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-600 ease-out text-lg font-bold`}
             >
               Projects
             </button>
             <button 
               onClick={() => scrollToSection('testimonials')}
-              className="text-foreground hover:text-primary transition-colors"
+              className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-600 ease-out text-lg font-bold`}
             >
               Testimonials
             </button>
             <Button 
               onClick={() => scrollToSection('contact')}
-              className="glass-button hover-glow"
+              className={`${themeStyles.buttonBg} transition-all duration-600 ease-out hover:scale-115 shadow-lg hover:shadow-xl text-lg font-bold`}
             >
               Join Club
             </Button>
@@ -80,7 +144,7 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className={`md:hidden p-2 absolute right-6 ${themeStyles.iconColor} transition-colors duration-300`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (
@@ -93,40 +157,40 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 glass-card rounded-2xl p-6 space-y-4">
+          <div className={`md:hidden mt-4 ${themeStyles.mobileBg} rounded-2xl p-6 space-y-4`}>
             <button 
               onClick={() => scrollToSection('home')}
-              className="block w-full text-left text-foreground hover:text-primary transition-colors py-2"
+              className={`block w-full text-left ${themeStyles.textColor} ${themeStyles.hoverColor} transition-colors duration-300 py-2 text-lg font-bold`}
             >
               Home
             </button>
             <button 
               onClick={() => scrollToSection('about')}
-              className="block w-full text-left text-foreground hover:text-primary transition-colors py-2"
+              className={`block w-full text-left ${themeStyles.textColor} ${themeStyles.hoverColor} transition-colors duration-300 py-2 text-lg font-bold`}
             >
               About
             </button>
             <button 
               onClick={() => scrollToSection('features')}
-              className="block w-full text-left text-foreground hover:text-primary transition-colors py-2"
+              className={`block w-full text-left ${themeStyles.textColor} ${themeStyles.hoverColor} transition-colors duration-300 py-2 text-lg font-bold`}
             >
               Features
             </button>
             <button 
               onClick={() => scrollToSection('projects')}
-              className="block w-full text-left text-foreground hover:text-primary transition-colors py-2"
+              className={`block w-full text-left ${themeStyles.textColor} ${themeStyles.hoverColor} transition-colors duration-300 py-2 text-lg font-bold`}
             >
               Projects
             </button>
             <button 
               onClick={() => scrollToSection('testimonials')}
-              className="block w-full text-left text-foreground hover:text-primary transition-colors py-2"
+              className={`block w-full text-left ${themeStyles.textColor} ${themeStyles.hoverColor} transition-colors duration-300 py-2 text-lg font-bold`}
             >
               Testimonials
             </button>
             <Button 
               onClick={() => scrollToSection('contact')}
-              className="w-full glass-button hover-glow mt-4"
+              className={`w-full ${themeStyles.buttonBg} transition-all duration-300 mt-4 shadow-lg hover:shadow-xl text-lg font-bold`}
             >
               Join Club
             </Button>
