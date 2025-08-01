@@ -377,17 +377,23 @@ const ScrollVideoFrames = () => {
             }}
           >
             <h1
-              className={`text-8xl md:text-[12rem] lg:text-[14rem] xl:text-[16rem] font-black ${themeValues.textColor} tracking-widest text-center`}
-              style={{
-                fontWeight: 900,
-                textShadow: isDarkMode
-                  ? "0 0 20px rgba(255,255,255,0.3)"
-                  : "0 0 20px rgba(0,0,0,0.3)",
-                letterSpacing: "0.2em",
-              }}
-            >
-              {currentText.mainTitle}
-            </h1>
+  className={`text-8xl md:text-[12rem] lg:text-[14rem] xl:text-[16rem] font-black tracking-widest text-center ${
+    isDarkMode
+      ? "bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+      : ""
+  }`}
+  style={{
+    color: isDarkMode ? undefined : "#454547",
+    fontWeight: 900,
+    textShadow: isDarkMode
+      ? "0 0 20px rgba(255,255,255,0.3)"
+      : "0 0 10px rgba(0,0,0,0.05)",
+    letterSpacing: "0.2em",
+  }}
+>
+  {currentText.mainTitle}
+</h1>
+
           </div>
 
           {/* Main Subtitle - Bottom - MADE BIGGER AND BOLDER */}
@@ -402,17 +408,23 @@ const ScrollVideoFrames = () => {
             }}
           >
             <h1
-              className={`text-8xl md:text-[12rem] lg:text-[14rem] xl:text-[16rem] font-black ${themeValues.textColor} tracking-widest text-center`}
-              style={{
-                fontWeight: 900,
-                textShadow: isDarkMode
-                  ? "0 0 20px rgba(255,255,255,0.3)"
-                  : "0 0 20px rgba(0,0,0,0.3)",
-                letterSpacing: "0.2em",
-              }}
-            >
-              {currentText.mainSubtitle}
-            </h1>
+  className={`text-8xl md:text-[12rem] lg:text-[14rem] xl:text-[16rem] font-black tracking-widest text-center ${
+    isDarkMode
+      ? "bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+      : ""
+  }`}
+  style={{
+    color: isDarkMode ? undefined : "#454547",
+    fontWeight: 900,
+    textShadow: isDarkMode
+      ? "0 0 20px rgba(255,255,255,0.3)"
+      : "0 0 10px rgba(0,0,0,0.05)",
+    letterSpacing: "0.2em",
+  }}
+>
+  {currentText.mainSubtitle}
+</h1>
+
           </div>
 
           {/* Loading indicator - only show if images aren't loaded */}
