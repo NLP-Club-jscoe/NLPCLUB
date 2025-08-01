@@ -480,7 +480,7 @@ const ScrollVideoFrames = () => {
       </div>
 
       {/* Bottom spacer */}
-      <div className={`h-screen ${themeValues.heroBgColor}`}></div>
+      
     </div>
   );
 };

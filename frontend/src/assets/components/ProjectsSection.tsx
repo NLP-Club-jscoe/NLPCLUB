@@ -86,11 +86,10 @@ const ProjectsSection = () => {
             {/* Section Header */}
             <div className="text-center mb-16">
               <div className="flex items-center justify-center mb-6">
-                <Sparkles className="w-8 h-8 mr-3 text-purple-500" />
                 <h2 className="text-5xl md:text-6xl font-bold">
                   Featured <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Projects</span>
                 </h2>
-                <Sparkles className="w-8 h-8 ml-3 text-purple-500" />
+                
               </div>
               <p className={`text-xl max-w-3xl mx-auto ${themeClasses.muted}`}>
                 Discover our innovative NLP projects that are pushing the boundaries of 
@@ -188,7 +187,7 @@ const ProjectsSection = () => {
         </div>
       </section>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeInUp {
           from {
             opacity: 0;
