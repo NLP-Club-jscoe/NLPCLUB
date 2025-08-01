@@ -6,6 +6,8 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true); // Start with dark mode
+  const [isHeaderVisible, setIsHeaderVisible] = useState(false); // Start hidden
+  const [activityTimeout, setActivityTimeout] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,6 +16,85 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Auto-hide header functionality
+  useEffect(() => {
+    let timeoutId;
+
+    const showHeader = () => {
+      setIsHeaderVisible(true);
+      
+      // Clear existing timeout
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      
+      // Set new timeout to hide after 2 seconds of inactivity
+      timeoutId = setTimeout(() => {
+        setIsHeaderVisible(false);
+      }, 2000);
+    };
+
+    const hideHeader = () => {
+      setIsHeaderVisible(false);
+    };
+
+    // Show header on mouse move
+    const handleMouseMove = () => {
+      showHeader();
+    };
+
+    // Show header on scroll
+    const handleScroll = () => {
+      showHeader();
+    };
+
+    // Show header on key press (for accessibility)
+    const handleKeyPress = () => {
+      showHeader();
+    };
+
+    // Show header when mouse enters window
+    const handleMouseEnter = () => {
+      showHeader();
+    };
+
+    // Hide header when mouse leaves window (optional)
+    const handleMouseLeave = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(() => {
+        setIsHeaderVisible(false);
+      }, 1000); // Shorter timeout when mouse leaves
+    };
+
+    // Add event listeners
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('scroll', handleScroll);
+    document.addEventListener('keydown', handleKeyPress);
+    document.addEventListener('mouseenter', handleMouseEnter);
+    document.addEventListener('mouseleave', handleMouseLeave);
+
+    // Cleanup
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('keydown', handleKeyPress);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+
+  // Keep header visible when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      setIsHeaderVisible(true);
+    }
+  }, [isMobileMenuOpen]);
 
   // Simplified theme detection - checks for background color to determine theme
   useEffect(() => {
@@ -64,7 +145,7 @@ const Header = () => {
     };
   }, []);
 
-  const scrollToSection = (sectionId: string) => {
+  const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
     setIsMobileMenuOpen(false);
@@ -90,29 +171,29 @@ const Header = () => {
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${themeStyles.headerBg}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-in-out ${themeStyles.headerBg} ${
+        isHeaderVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+      }`}
     >
       <nav className="container mx-auto px-6 py-3">
         <div className="flex items-center justify-center">
           {/* Logo on the left */}
-          {/* Logo on the left */}
-<div className="flex items-center space-x-1 absolute left-6">
-  <img
-    src="logo.gif"
-    alt="Logo"
-    className="w-15 h-15 object-contain"
-  />
-  <span className={`text-xl font-bold ${themeStyles.logoText} drop-shadow-sm`}>
-    NLP Club
-  </span>
-</div>
-
+          <div className="flex items-center space-x-1 absolute left-6">
+            <img
+              src="logo.gif"
+              alt="Logo"
+              className="w-15 h-15 object-contain"
+            />
+            <span className={`text-xl font-bold ${themeStyles.logoText} drop-shadow-sm`}>
+              NLP Club
+            </span>
+          </div>
 
           {/* Centered Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <button 
               onClick={() => scrollToSection('home')}
-              className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-6x00 ease-out text-lg font-bold`}
+              className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-600 ease-out text-lg font-bold`}
             >
               Home
             </button>
