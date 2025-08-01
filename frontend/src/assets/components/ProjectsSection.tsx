@@ -132,7 +132,7 @@ const ProjectsSection = () => {
 
                   {/* Content */}
                   <div className="p-8">
-                    <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    <h3 className="text-2xl font-bold mb-4 bg-black">
                       {project.title}
                     </h3>
                     <p className={`${themeClasses.muted} mb-6 leading-relaxed text-lg`}>

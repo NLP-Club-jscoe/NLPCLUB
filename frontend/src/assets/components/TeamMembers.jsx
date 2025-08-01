@@ -474,9 +474,9 @@ const TeamMembers = () => {
 
         <div className="relative z-10 ml-80 px-4 py-15">
           {/* Header */}
-          <div className="flex justify-between items-center mb-12 max-w-4xl mx-auto">
-            <h2 className={`text-4xl md:text-5xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} ml-0`}>
-              <span className="text-teal-400">MEET THE TECH-DRIVEN NLP CREW</span>
+          <div className="flex justify-between items-center mb-12 max-w-4xl mx-5px">
+            <h2 className={`text-4xl md:text-5xl font-bold ml-0`}>
+              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">MEET THE TECH-DRIVEN NLP CREW</span>
             </h2>
           </div>
 
