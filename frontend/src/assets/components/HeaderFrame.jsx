@@ -329,10 +329,10 @@ const ScrollVideoFrames = () => {
             </div>
           )}
 
-          {/* Left Side Text with Animation */}
+          {/* Left Side Text - Now positioned at TOP */}
           <div
             ref={leftTextRef}
-            className="absolute left-8 md:left-16 top-1/2 -translate-y-1/2 pointer-events-none max-w-xs"
+            className="absolute left-8 md:left-16 top-20 md:top-24 pointer-events-none max-w-xs"
             style={{
               transform: "translateX(-100px)",
               opacity: 0,
@@ -347,10 +347,10 @@ const ScrollVideoFrames = () => {
             </h2>
           </div>
 
-          {/* Right Side Text with Animation */}
+          {/* Right Side Text - Now positioned at BOTTOM */}
           <div
             ref={rightTextRef}
-            className="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 pointer-events-none max-w-xs text-right"
+            className="absolute right-8 md:right-16 bottom-20 md:bottom-24 pointer-events-none max-w-xs text-right"
             style={{
               transform: "translateX(100px)",
               opacity: 0,
