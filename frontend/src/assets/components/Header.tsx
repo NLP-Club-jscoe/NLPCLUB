@@ -95,12 +95,18 @@ const Header = () => {
       <nav className="container mx-auto px-6 py-3">
         <div className="flex items-center justify-center">
           {/* Logo on the left */}
-          <div className="flex items-center space-x-3 absolute left-6">
-            <div className={`p-2 rounded-xl ${themeStyles.logoIconBg} shadow-lg`}>
-              <Brain className="w-6 h-6 text-white" />
-            </div>
-            <span className={`text-xl font-bold ${themeStyles.logoText} drop-shadow-sm`}>NLP Club</span>
-          </div>
+          {/* Logo on the left */}
+<div className="flex items-center space-x-1 absolute left-6">
+  <img
+    src="logo.gif"
+    alt="Logo"
+    className="w-15 h-15 object-contain"
+  />
+  <span className={`text-xl font-bold ${themeStyles.logoText} drop-shadow-sm`}>
+    NLP Club
+  </span>
+</div>
+
 
           {/* Centered Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">

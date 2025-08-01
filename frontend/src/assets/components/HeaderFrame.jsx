@@ -1,31 +1,38 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import gsap from "gsap";
+import React from "react";
 
 const ScrollVideoFrames = () => {
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [imageDisappeared, setImageDisappeared] = useState(false);
+  const [showFinalAnimation, setShowFinalAnimation] = useState(false);
   const containerRef = useRef(null);
   const leftTextRef = useRef(null);
-  const totalFrames = 118;
+  const rightTextRef = useRef(null);
+  const mainTitleRef = useRef(null);
+  const mainSubtitleRef = useRef(null);
+  const imageContainerRef = useRef(null);
+  const totalFrames = 140;
   const currentFrameRef = useRef({ current: 0 });
 
   // Preload images for both themes
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [darkImages, setDarkImages] = useState([]);
   const [lightImages, setLightImages] = useState([]);
+  const [titlesVisible, setTitlesVisible] = useState(false);
 
   // Text content for different frames/themes
   const textContent = useMemo(() => ({
     dark: {
-      leftText: "WHERE MIND MEETS CREATIVITY",
+      leftText: "THE FUTURE IS AI AND WE'RE LEADING THE WAY",
       rightText: "WHERE LANGUAGE MEETS IMAGINATION",
       mainTitle: "NLP",
       mainSubtitle: "CLUB"
     },
     light: {
       leftText: "THE FUTURE IS AI AND WE'RE LEADING THE WAY",
-      rightText: "IN THE PURSUIT OF CREATIVITY",
+      rightText: "WHERE LANGUAGE MEETS IMAGINATION",
       mainTitle: "NLP", 
       mainSubtitle: "CLUB"
     }
@@ -74,6 +81,11 @@ const ScrollVideoFrames = () => {
       setDarkImages(darkImgs);
       setLightImages(lightImgs);
       setImagesLoaded(true);
+      
+      // Show titles after 1 second delay once images are loaded
+      setTimeout(() => {
+        setTitlesVisible(true);
+      }, 1000);
     } catch (error) {
       console.error("Error loading images:", error);
     }
@@ -84,9 +96,89 @@ const ScrollVideoFrames = () => {
     preloadImages();
   }, [preloadImages]);
 
-  // GSAP Text Animation for left text with smooth scroll-based fade in
+  // Handle image disappearing and final animation
   useEffect(() => {
-    if (!imagesLoaded || !leftTextRef.current) return;
+    if (currentFrame >= totalFrames - 1) { // When we reach the end (frame 117, since 0-indexed)
+      const timer = setTimeout(() => {
+        setImageDisappeared(true);
+        // Start final animation after image disappears
+        setTimeout(() => {
+          setShowFinalAnimation(true);
+        }, 100);
+      }, 2000); // 2 second delay
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentFrame, totalFrames]);
+
+  // Final animation effect - Text moving toward each other and blinking
+  useEffect(() => {
+    if (showFinalAnimation && mainTitleRef.current && mainSubtitleRef.current) {
+      // GSAP-like animation using CSS transitions and transforms
+      const animateToCenter = () => {
+        // Move NLP down and CLUB up
+        if (mainTitleRef.current) {
+          mainTitleRef.current.style.transform = 'translateX(-50%) translateY(100px) scale(1.2)';
+          mainTitleRef.current.style.transition = 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        }
+        
+        if (mainSubtitleRef.current) {
+          mainSubtitleRef.current.style.transform = 'translateX(-50%) translateY(-100px) scale(1.2)';
+          mainSubtitleRef.current.style.transition = 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        }
+
+        // Add blinking effect
+        setTimeout(() => {
+          startBlinking();
+        }, 1500);
+      };
+
+      const startBlinking = () => {
+        const blinkElements = [mainTitleRef.current, mainSubtitleRef.current];
+        
+        blinkElements.forEach((element, index) => {
+          if (element) {
+            // Add glowing effect
+            element.style.textShadow = isDarkMode 
+              ? '0 0 30px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.6)' 
+              : '0 0 30px rgba(0,0,0,0.8), 0 0 60px rgba(0,0,0,0.6)';
+            
+            // Blinking animation
+            let blinkCount = 0;
+            const blinkInterval = setInterval(() => {
+              if (blinkCount >= 6) { // Blink 3 times (6 state changes)
+                clearInterval(blinkInterval);
+                // Final glow state
+                element.style.textShadow = isDarkMode 
+                  ? '0 0 40px rgba(255,255,255,1), 0 0 80px rgba(255,255,255,0.8)' 
+                  : '0 0 40px rgba(0,0,0,1), 0 0 80px rgba(0,0,0,0.8)';
+                return;
+              }
+              
+              if (blinkCount % 2 === 0) {
+                element.style.opacity = '0.3';
+                element.style.textShadow = isDarkMode 
+                  ? '0 0 10px rgba(255,255,255,0.3)' 
+                  : '0 0 10px rgba(0,0,0,0.3)';
+              } else {
+                element.style.opacity = '1';
+                element.style.textShadow = isDarkMode 
+                  ? '0 0 50px rgba(255,255,255,1), 0 0 100px rgba(255,255,255,0.8)' 
+                  : '0 0 50px rgba(0,0,0,1), 0 0 100px rgba(0,0,0,0.8)';
+              }
+              blinkCount++;
+            }, 200);
+          }
+        });
+      };
+
+      animateToCenter();
+    }
+  }, [showFinalAnimation, isDarkMode]);
+
+  // GSAP Text Animation for left and right text with smooth scroll-based fade in
+  useEffect(() => {
+    if (!imagesLoaded || !leftTextRef.current || !rightTextRef.current || showFinalAnimation) return;
 
     const handleTextAnimation = () => {
       if (!containerRef.current) return;
@@ -106,18 +198,26 @@ const ScrollVideoFrames = () => {
       // Calculate progress (0 to 1)
       const progress = Math.max(0, Math.min(1, currentScroll / scrollDistance));
       
-      // Smooth fade in with slide animation tied to scroll
-      const translateX = -100 + (progress * 100); // Slide from -100px to 0px
-      const opacity = progress; // Fade from 0 to 1
+      // Left text: Slide from left (-100px to 0px)
+      const leftTranslateX = -100 + (progress * 100);
+      const leftOpacity = progress;
       
-      // Apply animation with GSAP for smoothness
-      gsap.to(leftTextRef.current, {
-        x: translateX,
-        opacity: opacity,
-        duration: 0.1,
-        ease: "none", // No easing for direct scroll response
-        overwrite: true
-      });
+      // Right text: Slide from right (100px to 0px)
+      const rightTranslateX = 100 - (progress * 100);
+      const rightOpacity = progress;
+      
+      // Apply smooth transitions
+      if (leftTextRef.current) {
+        leftTextRef.current.style.transform = `translateX(${leftTranslateX}px)`;
+        leftTextRef.current.style.opacity = leftOpacity;
+        leftTextRef.current.style.transition = 'all 0.1s ease-out';
+      }
+
+      if (rightTextRef.current) {
+        rightTextRef.current.style.transform = `translateX(${rightTranslateX}px)`;
+        rightTextRef.current.style.opacity = rightOpacity;
+        rightTextRef.current.style.transition = 'all 0.1s ease-out';
+      }
     };
 
     // Initial call
@@ -140,11 +240,11 @@ const ScrollVideoFrames = () => {
     return () => {
       window.removeEventListener('scroll', throttledHandler);
     };
-  }, [imagesLoaded]);
+  }, [imagesLoaded, showFinalAnimation]);
 
   // Optimized scroll handler with throttling
   const handleScroll = useCallback(() => {
-    if (!containerRef.current || !imagesLoaded) return;
+    if (!containerRef.current || !imagesLoaded || showFinalAnimation) return;
 
     const container = containerRef.current;
     const containerHeight = container.offsetHeight;
@@ -165,17 +265,11 @@ const ScrollVideoFrames = () => {
 
     const targetFrame = easedProgress * (totalFrames - 1);
 
-    // Smooth animation with GSAP
-    gsap.to(currentFrameRef.current, {
-      current: targetFrame,
-      duration: 0.1,
-      ease: "power2.out",
-      onUpdate: () => {
-        const rounded = Math.round(currentFrameRef.current.current);
-        setCurrentFrame(Math.max(0, Math.min(totalFrames - 1, rounded)));
-      }
-    });
-  }, [imagesLoaded, totalFrames]);
+    // Smooth frame transition
+    const currentTargetFrame = Math.max(0, Math.min(totalFrames - 1, Math.round(targetFrame)));
+    currentFrameRef.current.current = currentTargetFrame;
+    setCurrentFrame(currentTargetFrame);
+  }, [imagesLoaded, totalFrames, showFinalAnimation]);
 
   // Add scroll event listener with RAF throttling
   useEffect(() => {
@@ -218,23 +312,21 @@ const ScrollVideoFrames = () => {
     [isDarkMode, darkImages, lightImages]
   );
 
-  // Memoized text animation calculations for other text elements
+  // Memoized text animation calculations for title elements only
   const textAnimations = useMemo(() => {
+    if (showFinalAnimation) {
+      return { titleScale: 1, titleOpacity: 1 };
+    }
+    
     // Main title animation based on scroll progress
     const titleScale = 1 + scrollProgress * 0.1;
     const titleOpacity = Math.max(0.8, 1 - scrollProgress * 0.3);
-    
-    // Right side text animations based on scroll
-    const rightTextOpacity = Math.max(0.6, 1 - scrollProgress * 0.4);
-    const rightTextTransform = `translateX(${scrollProgress * 20}px)`;
 
     return { 
       titleScale, 
-      titleOpacity, 
-      rightTextOpacity,
-      rightTextTransform
+      titleOpacity
     };
-  }, [scrollProgress]);
+  }, [scrollProgress, showFinalAnimation]);
 
   return (
     <div className={`w-full transition-colors duration-300`}>
@@ -266,7 +358,14 @@ const ScrollVideoFrames = () => {
           ) : (
             <>
               {/* Video frames - Keep original layout with slight downward positioning */}
-              <div className="w-full h-full flex relative">
+              <div 
+                ref={imageContainerRef}
+                className="w-full h-full flex relative z-20"
+                style={{
+                  opacity: imageDisappeared ? 0 : 1,
+                  transition: 'opacity 0.8s ease-out'
+                }}
+              >
                 <div className="w-2/4 m-auto h-full justify-center relative mt-8 md:mt-12">
                   <img
                     src={themeValues.currentImages[currentFrame]?.src}
@@ -281,13 +380,14 @@ const ScrollVideoFrames = () => {
                 </div>
               </div>
 
-              {/* Left Side Text with GSAP Animation */}
+              {/* Left Side Text with Animation */}
               <div 
                 ref={leftTextRef}
                 className="absolute left-8 md:left-16 top-1/2 -translate-y-1/2 pointer-events-none z-10 max-w-xs"
                 style={{
                   transform: 'translateX(-100px)',
-                  opacity: 0
+                  opacity: showFinalAnimation ? 0 : 0,
+                  transition: showFinalAnimation ? 'opacity 0.5s ease-out' : 'none'
                 }}
               >
                 <h2 className={`text-2xl md:text-3xl lg:text-4xl font-black leading-tight ${themeValues.textColor} tracking-wide`}>
@@ -295,14 +395,14 @@ const ScrollVideoFrames = () => {
                 </h2>
               </div>
 
-              {/* Right Side Text */}
+              {/* Right Side Text with Animation */}
               <div 
+                ref={rightTextRef}
                 className="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 pointer-events-none z-10 max-w-xs text-right"
                 style={{
-                  opacity: textAnimations.rightTextOpacity,
-                  transform: textAnimations.rightTextTransform,
-                  willChange: "transform, opacity",
-                  transition: "none",
+                  transform: 'translateX(100px)',
+                  opacity: showFinalAnimation ? 0 : 0,
+                  transition: showFinalAnimation ? 'opacity 0.5s ease-out' : 'none'
                 }}
               >
                 <h2 className={`text-2xl md:text-3xl lg:text-4xl font-black leading-tight ${themeValues.textColor} tracking-wide`}>
@@ -312,36 +412,62 @@ const ScrollVideoFrames = () => {
 
               {/* Main Title - Top */}
               <div 
-                className="absolute top-16 md:top-20 left-2/4 pointer-events-none z-10"
+                ref={mainTitleRef}
+                className="absolute top-12 md:top-16 left-2/4 pointer-events-none z-10"
                 style={{
                   transform: `translateX(-50%) scale(${textAnimations.titleScale})`,
                   opacity: textAnimations.titleOpacity,
                   willChange: "transform, opacity",
-                  transition: "none",
+                  transition: showFinalAnimation ? "none" : "none",
                 }}
               >
-                <h1 className={`text-6xl md:text-8xl lg:text-9xl font-black ${themeValues.textColor} tracking-widest text-center`}>
+                <h1 
+                  className={`text-8xl md:text-[12rem] lg:text-[14rem] xl:text-[16rem] font-black ${themeValues.textColor} tracking-widest text-center`}
+                  style={{
+                    fontWeight: 900,
+                    textShadow: isDarkMode 
+                      ? '0 0 20px rgba(255,255,255,0.3)' 
+                      : '0 0 20px rgba(0,0,0,0.3)',
+                    letterSpacing: '0.2em'
+                  }}
+                >
                   {currentText.mainTitle}
                 </h1>
               </div>
 
               {/* Main Subtitle - Bottom */}
               <div 
-                className="absolute bottom-16 md:bottom-20 left-1/2 pointer-events-none z-10"
+                ref={mainSubtitleRef}
+                className="absolute bottom-12 md:bottom-16 left-1/2 pointer-events-none z-10"
                 style={{
                   transform: `translateX(-50%) scale(${textAnimations.titleScale})`,
                   opacity: textAnimations.titleOpacity,
                   willChange: "transform, opacity",
-                  transition: "none",
+                  transition: showFinalAnimation ? "none" : "none",
                 }}
               >
-                <h1 className={`text-6xl md:text-8xl lg:text-9xl font-black ${themeValues.textColor} tracking-widest text-center`}>
+                <h1 
+                  className={`text-8xl md:text-[12rem] lg:text-[14rem] xl:text-[16rem] font-black ${themeValues.textColor} tracking-widest text-center`}
+                  style={{
+                    fontWeight: 900,
+                    textShadow: isDarkMode 
+                      ? '0 0 20px rgba(255,255,255,0.3)' 
+                      : '0 0 20px rgba(0,0,0,0.3)',
+                    letterSpacing: '0.2em'
+                  }}
+                >
                   {currentText.mainSubtitle}
                 </h1>
               </div>
 
               {/* Navigation Menu - Top */}
-              <div className="absolute top-8 left-1/2 -translate-x-1/2 pointer-events-none z-10">
+              <div 
+                className="absolute top-8 left-1/2 -translate-x-1/2 pointer-events-none z-10"
+                style={{
+                  opacity: showFinalAnimation ? 0 : 1,
+                  transition: 'opacity 0.5s ease-out'
+                }}
+              >
                 <nav className="flex space-x-8">
                   <span className={`text-sm md:text-base font-bold ${themeValues.textColor} tracking-wider`}>HOME</span>
                   <span className={`text-sm md:text-base font-bold ${themeValues.textColor} tracking-wider`}>ABOUT US</span>
