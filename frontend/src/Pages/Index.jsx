@@ -4,22 +4,22 @@ import AboutSection from "../assets/components/AboutSection";
 import FeaturesSection from "../assets/components/FeaturesSection";
 import ProjectsSection from "../assets/components/ProjectsSection";
 import VideoSection from "../assets/components/VideoSection";
-import TestimonialsSection from "../assets/components/TestimonialsSection";
+import Mentors from "../assets/components/Mentors";
 import Footer from "../assets/components/Footer";
 import HeaderFrame from "../assets/components/HeaderFrame"
 import Head from "../assets/components/Head"
+import TeamMembers from "../assets/components/TeamMembers";
+import NlpClubGallery from "../assets/components/TeamMemberGallery";
 
 const Index = () => {
   return (
     <div className="min-h-screen " style={{ backgroundColor: '#FFF8F0',fontFamily: 'StencilFont' }}>
       <Header />
  <Head></Head>
-<HeroSection></HeroSection>
-      <AboutSection />
-      <FeaturesSection />
       <ProjectsSection />
-      <VideoSection />
-      <TestimonialsSection />
+      <NlpClubGallery/>
+      <Mentors />
+      <TeamMembers/>
       <Footer />
     </div>
   );

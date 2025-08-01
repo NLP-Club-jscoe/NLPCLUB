@@ -1,139 +1,218 @@
-import { Brain, Mail, Github, Twitter, Linkedin, MapPin, Calendar, Users } from 'lucide-react';
-import { Button } from "../../assets/components/ui/button";
-
+import React, { useState, useEffect } from 'react';
+import { Brain, Mail, Github, Twitter, Linkedin, MapPin, Calendar, Users, Send, ChevronUp, ExternalLink, CheckCircle } from 'lucide-react';
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [hoveredSocial, setHoveredSocial] = useState(null);
+
+  // Monitor scroll for back-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const quickLinks = [
-    { name: 'About Us', href: '#about' },
-    { name: 'Research', href: '#projects' },
-    { name: 'Events', href: '#events' },
-    { name: 'Join Club', href: '#contact' }
+    { name: 'About Us', href: '#about', description: 'Learn about our mission' },
+    { name: 'Research', href: '#projects', description: 'Explore our projects' },
+    { name: 'Events', href: '#events', description: 'Join our activities' },
+    { name: 'Join Club', href: '#contact', description: 'Become a member' }
   ];
 
   const resources = [
-    { name: 'Getting Started', href: '#' },
-    { name: 'Tutorials', href: '#' },
-    { name: 'Documentation', href: '#' },
-    { name: 'GitHub Repos', href: '#' }
+    { name: 'Getting Started', href: '#', icon: ExternalLink, new: true },
+    { name: 'Tutorials', href: '#', icon: ExternalLink },
+    { name: 'Documentation', href: '#', icon: ExternalLink },
+    { name: 'GitHub Repos', href: '#', icon: ExternalLink, popular: true }
   ];
 
   const contact = [
-    { icon: Mail, text: 'nlpclub@university.edu', href: 'mailto:nlpclub@university.edu' },
-    { icon: MapPin, text: 'Computer Science Building, Room 204', href: '#' },
-    { icon: Calendar, text: 'Weekly meetings: Fridays 6 PM', href: '#' }
+    { icon: Mail, text: 'nlpclub@university.edu', href: 'mailto:nlpclub@university.edu', type: 'email' },
+    { icon: MapPin, text: 'Computer Science Building, Room 204', href: '#', type: 'location' },
+    { icon: Calendar, text: 'Weekly meetings: Fridays 6 PM', href: '#', type: 'schedule' }
   ];
 
-  const scrollToSection = (sectionId: string) => {
+  const socialLinks = [
+    { icon: Twitter, href: '#', name: 'Twitter', followers: '2.1K' },
+    { icon: Github, href: '#', name: 'GitHub', followers: '850' },
+    { icon: Linkedin, href: '#', name: 'LinkedIn', followers: '1.5K' }
+  ];
+
+  const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId.replace('#', ''));
     element?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSubscribe = () => {
+    if (email) {
+      setIsSubscribed(true);
+      setTimeout(() => {
+        setIsSubscribed(false);
+        setEmail('');
+      }, 3000);
+    }
+  };
+
   return (
-    <footer id="contact" className="relative overflow-hidden pt-32 pb-8">
-      {/* Background Elements */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-primary rounded-full blur-3xl opacity-10"></div>
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-secondary rounded-full blur-3xl opacity-10"></div>
+    <footer id="contact" className="relative bg-black text-white overflow-hidden">
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-white rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white rounded-full blur-3xl animate-pulse delay-500"></div>
+      </div>
+
+      {/* Grid Pattern Overlay */}
+      <div className="absolute inset-0 opacity-10" style={{
+        backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+        backgroundSize: '50px 50px'
+      }}></div>
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-6 relative z-10 pt-32 pb-8">
         <div className="max-w-7xl mx-auto">
-          {/* CTA Section */}
+          {/* Enhanced CTA Section */}
           <div className="text-center mb-20">
-            <div className="glass-card rounded-3xl p-12 hover-glow">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Ready to <span className="gradient-text">Join</span> Us?
-              </h2>
-              <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-3xl p-12 hover:bg-gray-900/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-white/10">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full mb-6 animate-bounce">
+                  <Brain className="w-10 h-10 text-black" />
+                </div>
+                <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                  Ready to <span className="text-white">Join</span> Us?
+                </h2>
+              </div>
+              <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
                 Take the first step towards advancing your NLP skills and being part of a 
                 community that's shaping the future of artificial intelligence.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button className="glass-button hover-glow px-8 py-4 text-lg font-semibold">
-                  <Users className="mr-2 w-5 h-5" />
+                <button className="group bg-white text-black px-8 py-4 text-lg font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center">
+                  <Users className="mr-2 w-5 h-5 group-hover:animate-pulse" />
                   Become a Member
-                </Button>
-                <Button variant="outline" className="glass-button hover-glow px-8 py-4 text-lg font-semibold">
-                  <Calendar className="mr-2 w-5 h-5" />
+                </button>
+                <button className="group border-2 border-white text-white px-8 py-4 text-lg font-semibold rounded-xl hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+                  <Calendar className="mr-2 w-5 h-5 group-hover:animate-spin" />
                   Attend Next Meeting
-                </Button>
+                </button>
               </div>
             </div>
           </div>
 
           {/* Main Footer Content */}
           <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-12 mb-16">
-            {/* Brand */}
+            {/* Enhanced Brand Section */}
             <div className="lg:col-span-1">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="p-3 rounded-xl bg-gradient-primary">
-                  <Brain className="w-8 h-8 text-white" />
+              <div className="flex items-center space-x-3 mb-6 group">
+                <div className="p-3 rounded-xl bg-white group-hover:rotate-12 transition-transform duration-300">
+                  <Brain className="w-8 h-8 text-black" />
                 </div>
-                <span className="text-2xl font-bold gradient-text">NLP Club</span>
+                <span className="text-2xl font-bold text-white">NLP Club</span>
               </div>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
+              <p className="text-gray-300 mb-6 leading-relaxed">
                 Empowering the next generation of NLP researchers and practitioners through 
                 collaborative learning, innovative research, and real-world applications.
               </p>
+              
+              {/* Enhanced Social Links */}
               <div className="flex space-x-4">
-                <a href="#" className="w-10 h-10 glass-button hover-glow rounded-full flex items-center justify-center">
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a href="#" className="w-10 h-10 glass-button hover-glow rounded-full flex items-center justify-center">
-                  <Github className="w-5 h-5" />
-                </a>
-                <a href="#" className="w-10 h-10 glass-button hover-glow rounded-full flex items-center justify-center">
-                  <Linkedin className="w-5 h-5" />
-                </a>
+                {socialLinks.map((social, index) => (
+                  <div key={index} className="relative group">
+                    <a 
+                      href={social.href} 
+                      className="w-12 h-12 bg-gray-800 hover:bg-white hover:text-black rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:rotate-12"
+                      onMouseEnter={() => setHoveredSocial(index)}
+                      onMouseLeave={() => setHoveredSocial(null)}
+                    >
+                      <social.icon className="w-5 h-5" />
+                    </a>
+                    {hoveredSocial === index && (
+                      <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-white text-black px-3 py-1 rounded-lg text-sm font-medium whitespace-nowrap animate-fadeIn">
+                        {social.followers} followers
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Quick Links */}
+            {/* Enhanced Quick Links */}
             <div>
-              <h3 className="text-xl font-bold gradient-text mb-6">Quick Links</h3>
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                Quick Links
+                <div className="ml-2 w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              </h3>
               <ul className="space-y-3">
-                {quickLinks.map((link) => (
+                {quickLinks.map((link, index) => (
                   <li key={link.name}>
                     <button 
                       onClick={() => scrollToSection(link.href)}
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      className="group text-gray-300 hover:text-white transition-all duration-300 flex items-center space-x-2"
                     >
-                      {link.name}
+                      <span className="w-1 h-1 bg-gray-600 rounded-full group-hover:bg-white group-hover:w-2 transition-all duration-300"></span>
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">{link.name}</span>
                     </button>
+                    <p className="text-xs text-gray-500 ml-4 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {link.description}
+                    </p>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Resources */}
+            {/* Enhanced Resources */}
             <div>
-              <h3 className="text-xl font-bold gradient-text mb-6">Resources</h3>
+              <h3 className="text-xl font-bold text-white mb-6">Resources</h3>
               <ul className="space-y-3">
-                {resources.map((resource) => (
-                  <li key={resource.name}>
+                {resources.map((resource, index) => (
+                  <li key={resource.name} className="relative">
                     <a 
                       href={resource.href}
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      className="group text-gray-300 hover:text-white transition-all duration-300 flex items-center justify-between"
                     >
-                      {resource.name}
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                        {resource.name}
+                      </span>
+                      <resource.icon className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </a>
+                    {resource.new && (
+                      <span className="absolute -top-2 -right-2 bg-white text-black text-xs px-2 py-0.5 rounded-full font-medium">
+                        NEW
+                      </span>
+                    )}
+                    {resource.popular && (
+                      <span className="absolute -top-2 -right-2 bg-gray-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                        POPULAR
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Contact */}
+            {/* Enhanced Contact */}
             <div>
-              <h3 className="text-xl font-bold gradient-text mb-6">Get in Touch</h3>
+              <h3 className="text-xl font-bold text-white mb-6">Get in Touch</h3>
               <ul className="space-y-4">
                 {contact.map((item, index) => (
-                  <li key={index} className="flex items-start space-x-3">
-                    <div className="w-6 h-6 flex items-center justify-center mt-0.5">
-                      <item.icon className="w-5 h-5 text-primary" />
-                    </div>
+                  <li key={index} className="group">
                     <a 
                       href={item.href}
-                      className="text-muted-foreground hover:text-primary transition-colors leading-relaxed"
+                      className="flex items-start space-x-3 text-gray-300 hover:text-white transition-all duration-300"
                     >
-                      {item.text}
+                      <div className="w-6 h-6 flex items-center justify-center mt-0.5 group-hover:animate-pulse">
+                        <item.icon className="w-5 h-5" />
+                      </div>
+                      <span className="leading-relaxed group-hover:translate-x-1 transition-transform duration-300">
+                        {item.text}
+                      </span>
                     </a>
                   </li>
                 ))}
@@ -141,47 +220,48 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Newsletter */}
-          <div className="glass-card rounded-2xl p-8 mb-12">
-            <div className="max-w-4xl mx-auto text-center">
-              <h3 className="text-2xl font-bold gradient-text mb-4">Stay Updated</h3>
-              <p className="text-muted-foreground mb-6">
-                Get the latest news about our research, events, and opportunities directly in your inbox.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-                <input 
-                  type="email" 
-                  placeholder="Enter your email"
-                  className="flex-1 px-4 py-3 bg-muted/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
-                <Button className="glass-button hover-glow px-6 py-3">
-                  Subscribe
-                </Button>
-              </div>
-            </div>
-          </div>
 
-          {/* Bottom Bar */}
-          <div className="border-t border-border pt-8">
+          {/* Enhanced Bottom Bar */}
+          <div className="border-t border-gray-800 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-muted-foreground text-sm mb-4 md:mb-0">
+              <p className="text-gray-400 text-sm mb-4 md:mb-0">
                 © 2024 NLP Club. All rights reserved. Built with passion for natural language processing.
               </p>
               <div className="flex space-x-6 text-sm">
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Privacy Policy
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Terms of Service
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Code of Conduct
-                </a>
+                {['Privacy Policy', 'Terms of Service', 'Code of Conduct'].map((link) => (
+                  <a 
+                    key={link}
+                    href="#" 
+                    className="text-gray-400 hover:text-white transition-colors duration-300 hover:underline"
+                  >
+                    {link}
+                  </a>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 w-12 h-12 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-200 transition-all duration-300 transform hover:scale-110 shadow-lg z-50 animate-bounce"
+        >
+          <ChevronUp className="w-6 h-6" />
+        </button>
+      )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
     </footer>
   );
 };
