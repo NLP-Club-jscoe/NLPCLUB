@@ -1,18 +1,12 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import React from "react";
 
 const ScrollVideoFrames = () => {
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [imageDisappeared, setImageDisappeared] = useState(false);
-  const [showFinalAnimation, setShowFinalAnimation] = useState(false);
   const containerRef = useRef(null);
   const leftTextRef = useRef(null);
   const rightTextRef = useRef(null);
-  const mainTitleRef = useRef(null);
-  const mainSubtitleRef = useRef(null);
-  const imageContainerRef = useRef(null);
   const totalFrames = 140;
   const currentFrameRef = useRef({ current: 0 });
 
@@ -96,89 +90,9 @@ const ScrollVideoFrames = () => {
     preloadImages();
   }, [preloadImages]);
 
-  // Handle image disappearing and final animation
-  useEffect(() => {
-    if (currentFrame >= totalFrames - 1) { // When we reach the end (frame 117, since 0-indexed)
-      const timer = setTimeout(() => {
-        setImageDisappeared(true);
-        // Start final animation after image disappears
-        setTimeout(() => {
-          setShowFinalAnimation(true);
-        }, 100);
-      }, 2000); // 2 second delay
-
-      return () => clearTimeout(timer);
-    }
-  }, [currentFrame, totalFrames]);
-
-  // Final animation effect - Text moving toward each other and blinking
-  useEffect(() => {
-    if (showFinalAnimation && mainTitleRef.current && mainSubtitleRef.current) {
-      // GSAP-like animation using CSS transitions and transforms
-      const animateToCenter = () => {
-        // Move NLP down and CLUB up
-        if (mainTitleRef.current) {
-          mainTitleRef.current.style.transform = 'translateX(-50%) translateY(100px) scale(1.2)';
-          mainTitleRef.current.style.transition = 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
-        }
-        
-        if (mainSubtitleRef.current) {
-          mainSubtitleRef.current.style.transform = 'translateX(-50%) translateY(-100px) scale(1.2)';
-          mainSubtitleRef.current.style.transition = 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
-        }
-
-        // Add blinking effect
-        setTimeout(() => {
-          startBlinking();
-        }, 1500);
-      };
-
-      const startBlinking = () => {
-        const blinkElements = [mainTitleRef.current, mainSubtitleRef.current];
-        
-        blinkElements.forEach((element, index) => {
-          if (element) {
-            // Add glowing effect
-            element.style.textShadow = isDarkMode 
-              ? '0 0 30px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.6)' 
-              : '0 0 30px rgba(0,0,0,0.8), 0 0 60px rgba(0,0,0,0.6)';
-            
-            // Blinking animation
-            let blinkCount = 0;
-            const blinkInterval = setInterval(() => {
-              if (blinkCount >= 6) { // Blink 3 times (6 state changes)
-                clearInterval(blinkInterval);
-                // Final glow state
-                element.style.textShadow = isDarkMode 
-                  ? '0 0 40px rgba(255,255,255,1), 0 0 80px rgba(255,255,255,0.8)' 
-                  : '0 0 40px rgba(0,0,0,1), 0 0 80px rgba(0,0,0,0.8)';
-                return;
-              }
-              
-              if (blinkCount % 2 === 0) {
-                element.style.opacity = '0.3';
-                element.style.textShadow = isDarkMode 
-                  ? '0 0 10px rgba(255,255,255,0.3)' 
-                  : '0 0 10px rgba(0,0,0,0.3)';
-              } else {
-                element.style.opacity = '1';
-                element.style.textShadow = isDarkMode 
-                  ? '0 0 50px rgba(255,255,255,1), 0 0 100px rgba(255,255,255,0.8)' 
-                  : '0 0 50px rgba(0,0,0,1), 0 0 100px rgba(0,0,0,0.8)';
-              }
-              blinkCount++;
-            }, 200);
-          }
-        });
-      };
-
-      animateToCenter();
-    }
-  }, [showFinalAnimation, isDarkMode]);
-
   // GSAP Text Animation for left and right text with smooth scroll-based fade in
   useEffect(() => {
-    if (!imagesLoaded || !leftTextRef.current || !rightTextRef.current || showFinalAnimation) return;
+    if (!imagesLoaded || !leftTextRef.current || !rightTextRef.current) return;
 
     const handleTextAnimation = () => {
       if (!containerRef.current) return;
@@ -240,11 +154,11 @@ const ScrollVideoFrames = () => {
     return () => {
       window.removeEventListener('scroll', throttledHandler);
     };
-  }, [imagesLoaded, showFinalAnimation]);
+  }, [imagesLoaded]);
 
   // Optimized scroll handler with throttling
   const handleScroll = useCallback(() => {
-    if (!containerRef.current || !imagesLoaded || showFinalAnimation) return;
+    if (!containerRef.current || !imagesLoaded) return;
 
     const container = containerRef.current;
     const containerHeight = container.offsetHeight;
@@ -269,7 +183,7 @@ const ScrollVideoFrames = () => {
     const currentTargetFrame = Math.max(0, Math.min(totalFrames - 1, Math.round(targetFrame)));
     currentFrameRef.current.current = currentTargetFrame;
     setCurrentFrame(currentTargetFrame);
-  }, [imagesLoaded, totalFrames, showFinalAnimation]);
+  }, [imagesLoaded, totalFrames]);
 
   // Add scroll event listener with RAF throttling
   useEffect(() => {
@@ -314,10 +228,6 @@ const ScrollVideoFrames = () => {
 
   // Memoized text animation calculations for title elements only
   const textAnimations = useMemo(() => {
-    if (showFinalAnimation) {
-      return { titleScale: 1, titleOpacity: 1 };
-    }
-    
     // Main title animation based on scroll progress
     const titleScale = 1 + scrollProgress * 0.1;
     const titleOpacity = Math.max(0.8, 1 - scrollProgress * 0.3);
@@ -326,7 +236,7 @@ const ScrollVideoFrames = () => {
       titleScale, 
       titleOpacity
     };
-  }, [scrollProgress, showFinalAnimation]);
+  }, [scrollProgress]);
 
   return (
     <div className={`w-full transition-colors duration-300`}>
@@ -358,14 +268,7 @@ const ScrollVideoFrames = () => {
           ) : (
             <>
               {/* Video frames - Keep original layout with slight downward positioning */}
-              <div 
-                ref={imageContainerRef}
-                className="w-full h-full flex relative z-20"
-                style={{
-                  opacity: imageDisappeared ? 0 : 1,
-                  transition: 'opacity 0.8s ease-out'
-                }}
-              >
+              <div className="w-full h-full flex relative z-20">
                 <div className="w-2/4 m-auto h-full justify-center relative mt-8 md:mt-12">
                   <img
                     src={themeValues.currentImages[currentFrame]?.src}
@@ -386,8 +289,7 @@ const ScrollVideoFrames = () => {
                 className="absolute left-8 md:left-16 top-1/2 -translate-y-1/2 pointer-events-none z-10 max-w-xs"
                 style={{
                   transform: 'translateX(-100px)',
-                  opacity: showFinalAnimation ? 0 : 0,
-                  transition: showFinalAnimation ? 'opacity 0.5s ease-out' : 'none'
+                  opacity: 0
                 }}
               >
                 <h2 className={`text-2xl md:text-3xl lg:text-4xl font-black leading-tight ${themeValues.textColor} tracking-wide`}>
@@ -401,8 +303,7 @@ const ScrollVideoFrames = () => {
                 className="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 pointer-events-none z-10 max-w-xs text-right"
                 style={{
                   transform: 'translateX(100px)',
-                  opacity: showFinalAnimation ? 0 : 0,
-                  transition: showFinalAnimation ? 'opacity 0.5s ease-out' : 'none'
+                  opacity: 0
                 }}
               >
                 <h2 className={`text-2xl md:text-3xl lg:text-4xl font-black leading-tight ${themeValues.textColor} tracking-wide`}>
@@ -410,15 +311,14 @@ const ScrollVideoFrames = () => {
                 </h2>
               </div>
 
-              {/* Main Title - Top */}
+              {/* Main Title - Top - MADE BIGGER AND BOLDER */}
               <div 
-                ref={mainTitleRef}
                 className="absolute top-12 md:top-16 left-2/4 pointer-events-none z-10"
                 style={{
                   transform: `translateX(-50%) scale(${textAnimations.titleScale})`,
                   opacity: textAnimations.titleOpacity,
                   willChange: "transform, opacity",
-                  transition: showFinalAnimation ? "none" : "none",
+                  transition: "none",
                 }}
               >
                 <h1 
@@ -435,15 +335,14 @@ const ScrollVideoFrames = () => {
                 </h1>
               </div>
 
-              {/* Main Subtitle - Bottom */}
+              {/* Main Subtitle - Bottom - MADE BIGGER AND BOLDER */}
               <div 
-                ref={mainSubtitleRef}
                 className="absolute bottom-12 md:bottom-16 left-1/2 pointer-events-none z-10"
                 style={{
                   transform: `translateX(-50%) scale(${textAnimations.titleScale})`,
                   opacity: textAnimations.titleOpacity,
                   willChange: "transform, opacity",
-                  transition: showFinalAnimation ? "none" : "none",
+                  transition: "none",
                 }}
               >
                 <h1 
@@ -461,13 +360,7 @@ const ScrollVideoFrames = () => {
               </div>
 
               {/* Navigation Menu - Top */}
-              <div 
-                className="absolute top-8 left-1/2 -translate-x-1/2 pointer-events-none z-10"
-                style={{
-                  opacity: showFinalAnimation ? 0 : 1,
-                  transition: 'opacity 0.5s ease-out'
-                }}
-              >
+              <div className="absolute top-8 left-1/2 -translate-x-1/2 pointer-events-none z-10">
                 <nav className="flex space-x-8">
                   <span className={`text-sm md:text-base font-bold ${themeValues.textColor} tracking-wider`}>HOME</span>
                   <span className={`text-sm md:text-base font-bold ${themeValues.textColor} tracking-wider`}>ABOUT US</span>
