@@ -264,8 +264,14 @@ const MemberDetails = ({ member, isDark }) => {
 // Info Sidebar Component
 const InfoSidebar = ({ selectedMember, isDark }) => {
   return (
-    <div className={`absolute left-0 top-0 w-80 h-full ${isDark ? 'bg-gray-900/95' : 'bg-white/95'} backdrop-blur-lg border-r ${isDark ? 'border-gray-700' : 'border-gray-300'} z-20 p-6 flex flex-col justify-center overflow-hidden`}>
-      <div className="max-w-full relative">
+    <div
+      className={`absolute left-10 top-42 h-[85vh] w-96 z-30 p-8 overflow-y-auto transition-all duration-500 ease-in-out
+        ${isDark
+          ? 'bg-gradient-to-br from-[#1f2937cc] via-[#111827cc] to-[#0f172acc] text-white border border-gray-700 shadow-[0_0_25px_rgba(0,0,0,0.6)]'
+          : 'bg-gradient-to-br from-[#ffffffcc] via-[#f3f4f6cc] to-[#e5e7ebcc] text-gray-900 border border-gray-300 shadow-lg'}
+        backdrop-blur-2xl rounded-3xl animate-slide-in transform hover:scale-[1.01] hover:shadow-2xl`}
+    >
+      <div className="space-y-6 animate-fade-in mt-20">
         {selectedMember ? (
           <MemberDetails member={selectedMember} isDark={isDark} />
         ) : (
@@ -277,28 +283,43 @@ const InfoSidebar = ({ selectedMember, isDark }) => {
         @keyframes fade-in {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(12px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
+
         @keyframes slide-in {
           from {
             opacity: 0;
-            transform: translateX(-20px);
+            transform: translateX(-30px);
           }
           to {
             opacity: 1;
             transform: translateX(0);
           }
         }
+
         .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
+          animation: fade-in 0.6s ease-out;
         }
+
         .animate-slide-in {
-          animation: slide-in 0.3s ease-out;
+          animation: slide-in 0.6s ease-out;
+        }
+
+        /* Custom Scrollbar */
+        .overflow-y-auto::-webkit-scrollbar {
+          width: 6px;
+        }
+        .overflow-y-auto::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+          background-color: ${isDark ? '#4B5563' : '#D1D5DB'};
+          border-radius: 10px;
         }
       `}</style>
     </div>
@@ -308,71 +329,74 @@ const InfoSidebar = ({ selectedMember, isDark }) => {
 // TeamMember Component
 const TeamMember = ({ member, onHover, onLeave, isActive, isDark }) => {
   return (
-    <div 
+    <div
       className="relative group cursor-pointer"
       onMouseEnter={() => onHover(member)}
       onMouseLeave={onLeave}
     >
       {/* Hexagon Container */}
       <div className="w-32 h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 relative">
-        {/* Golden Border Hexagon */}
-        <div 
-          className={`absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 p-[2px] transition-all duration-300 ease-in-out transform ${isActive ? 'scale-110 shadow-lg shadow-yellow-500/50' : 'group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-yellow-500/50'}`}
+        {/* Colorful Aurora Gradient Border */}
+        <div
+          className={`absolute inset-0 bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-500 p-[2.5px] rounded-md transition-all duration-300 ease-in-out transform 
+            ${isActive ? 'scale-110 shadow-2xl shadow-cyan-500/40 rotate-1' : 'group-hover:scale-110 group-hover:shadow-xl group-hover:rotate-1'}`}
           style={{
             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
           }}
         >
           {/* Inner Hexagon with Image */}
-          <div 
-            className={`w-full h-full ${isDark ? 'bg-black' : 'bg-white'}`}
+          <div
+            className={`w-full h-full overflow-hidden ${isDark ? 'bg-gray-900' : 'bg-white'} rounded-md shadow-inner`}
             style={{
               clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
             }}
           >
-            <img 
-              src={member.image} 
+            <img
+              src={member.image}
               alt={member.name}
-              className={`w-full h-full object-cover transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}
+              className={`w-full h-full object-cover transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}
             />
           </div>
         </div>
 
         {/* Hover Overlay */}
-        <div 
-          className={`absolute inset-0 ${isDark ? 'bg-gradient-to-br from-black/90 to-black/70' : 'bg-gradient-to-br from-white/90 to-white/70'} backdrop-blur-sm flex flex-col items-center justify-center ${isDark ? 'text-white' : 'text-gray-800'} p-4 transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+        <div
+          className={`absolute inset-0 transition-all duration-300 backdrop-blur-sm flex flex-col items-center justify-center text-center px-3 py-4
+          ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
+          ${isDark ? 'bg-gradient-to-br from-black/80 to-gray-900/80 text-white' : 'bg-gradient-to-br from-white/90 to-gray-100/80 text-gray-800'}`}
           style={{
             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
           }}
         >
-          <h3 className="text-sm font-bold text-center mb-1 text-yellow-500">{member.name}</h3>
-          <p className="text-xs text-teal-500 text-center mb-2">{member.role}</p>
-          <div className="flex space-x-3">
+          <h3 className="text-sm font-bold text-emerald-500 mb-1">{member.name}</h3>
+          <p className="text-xs text-indigo-500 mb-2">{member.role}</p>
+          <div className="flex space-x-4">
             {member.social.linkedin && (
-              <a 
-                href={member.social.linkedin} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-blue-400 hover:text-blue-300 transition-colors transform hover:scale-110"
+              <a
+                href={member.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:text-blue-400 transition-transform hover:scale-125"
               >
                 <FaLinkedin className="w-4 h-4" />
               </a>
             )}
             {member.social.github && (
-              <a 
-                href={member.social.github} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-800'} transition-colors transform hover:scale-110`}
+              <a
+                href={member.social.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-black'} transition-transform hover:scale-125`}
               >
                 <FaGithub className="w-4 h-4" />
               </a>
             )}
             {member.social.instagram && (
-              <a 
-                href={member.social.instagram} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-pink-400 hover:text-pink-300 transition-colors transform hover:scale-110"
+              <a
+                href={member.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-pink-500 hover:text-pink-400 transition-transform hover:scale-125"
               >
                 <FaInstagram className="w-4 h-4" />
               </a>
@@ -383,7 +407,6 @@ const TeamMember = ({ member, onHover, onLeave, isActive, isDark }) => {
     </div>
   );
 };
-
 const TeamMembers = () => {
   const [teamMembers] = useState(initialTeamMembers);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -452,7 +475,7 @@ const TeamMembers = () => {
         <div className="relative z-10 ml-80 px-4 py-15">
           {/* Header */}
           <div className="flex justify-between items-center mb-12 max-w-4xl mx-auto">
-            <h2 className={`text-4xl md:text-5xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} ml-4`}>
+            <h2 className={`text-4xl md:text-5xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} ml-0`}>
               <span className="text-teal-400">MEET THE TECH-DRIVEN NLP CREW</span>
             </h2>
           </div>
