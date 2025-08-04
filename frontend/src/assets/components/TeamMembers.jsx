@@ -528,7 +528,7 @@ const TeamMembers = ({ isDarkMode }) => {
   };
 
   return (
-    <div
+    <div id="members"
       className={`${
         isDarkMode ? "bg-black" : "bg-gray-50"
       } transition-colors duration-300`}

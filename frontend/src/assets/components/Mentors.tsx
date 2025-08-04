@@ -10,7 +10,7 @@ const initialMentors = [
     id: 1,
     name: 'Dr. P.D. Lambhate',
     role: 'Head Of Department',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+    image: 'mentor1.jpg',
     bio: 'Ph.D. in Computer Engineering with over 26 years of teaching experience and 2 years of industrial experience, providing strong academic and practical guidance to students.',
     social: {
       linkedin: 'https://linkedin.com',
@@ -21,7 +21,7 @@ const initialMentors = [
     id: 2,
     name: 'Dr. S.B. Chaudhari',
     role: 'Club Co-ordinator',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+    image: 'mentor2.jpg',
     bio: 'Ph.D. in Computer Engineering with over 32 years of teaching experience, specializing in Natural Language Processing, Machine Translation, and Transliteration, with expertise in C, C++, Java, AFL, and Python.',
     social: {
       linkedin: 'https://linkedin.com',
@@ -210,7 +210,7 @@ const Mentors = ({isDarkMode}) => {
         
         {/* Section Header */}
         {/* Section Header */}
-<div className="text-center max-w-3xl mx-auto mb-16">
+<div className="text-center max-w-3xl mx-auto mb- 0">
   <h2
     className={`text-4xl md:text-5xl font-extrabold tracking-tight mb-4 ${
       isDarkMode
@@ -221,34 +221,14 @@ const Mentors = ({isDarkMode}) => {
     Our Mentors
   </h2>
   <p
-    className={`text-lg ${
+    className={`text-lg mb-8 ${
       isDarkMode ? 'text-slate-400' : 'text-slate-600'
     }`}
   >
     Guidance from the best in the field, dedicated to fostering the next generation of innovators.
   </p>
 
- {isDarkMode && (
-    <div className="w-[40rem] h-40 relative mx-auto">
-      {/* Gradients */}
-      <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm" />
-      <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4" />
-      <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-[5px] w-1/4 blur-sm" />
-      <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-px w-1/4" />
-
-      {/* Core component */}
-      <SparklesCore
-        background="transparent"
-        minSize={0.4}
-        maxSize={2}
-        particleDensity={300}
-        className="w-full h-full"
-        particleColor="#FFFFFF"
-      />
-
-      <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_0%,white)]" />
-    </div>
-  )}
+ 
 </div>
 
 

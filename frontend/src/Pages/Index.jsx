@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Header from "../assets/components/Header";
 import HeroSection from "../assets/components/HeroSection";
-import FeaturesSection from "../assets/components/FeaturesSection";
 import ProjectsSection from "../assets/components/ProjectsSection";
 import Mentors from "../assets/components/Mentors";
 import Footer from "../assets/components/Footer";
@@ -75,7 +74,6 @@ const Index = () => {
       <Header isDarkMode={isDarkMode} />
       <Head isDarkMode={isDarkMode} />
       <AboutUsSection isDarkMode={isDarkMode} />
-      <FeaturesSection isDarkMode={isDarkMode} />
       <ProjectsSection isDarkMode={isDarkMode} />
       <NlpClubGallery isDarkMode={isDarkMode} />
       <Mentors isDarkMode={isDarkMode} />
