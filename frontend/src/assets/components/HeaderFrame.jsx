@@ -393,12 +393,21 @@ const ScrollVideoFrames = ({isDarkMode}) => {
 
           </div>
 
-          {/* Loading indicator - only show if images aren't loaded */}
+          {/* Loading indicator - full screen */}
           {!imagesLoaded && (
-            <div className="absolute top-4 left-4 z-40">
-              <div
-                className={`animate-spin rounded-full h-6 w-6 border-b-2 ${themeValues.spinnerColor}`}
-              ></div>
+            <div
+              className="absolute inset-0 flex items-center justify-center bg-opacity-80 z-50"
+              style={{ backgroundColor: isDarkMode ? '#000' : '#FFF' }}
+            >
+              <div className="text-center">
+                <h2
+                  className={`text-4xl font-bold ${themeValues.textColor}`}>
+                  Loading...
+                </h2>
+                <p className={`mt-2 ${themeValues.textColor}`}>
+                  Please wait while we prepare the experience.
+                </p>
+              </div>
             </div>
           )}
         </div>
