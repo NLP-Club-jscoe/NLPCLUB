@@ -80,7 +80,7 @@ const Index = () => {
       <NlpClubGallery isDarkMode={isDarkMode} />
       <Mentors isDarkMode={isDarkMode} />
       <TeamMembers isDarkMode={isDarkMode} />
-      <Footer isDarkMode={isDarkMode} />
+      <Footer isDarkMode={isDarkMode} toggleTheme={toggleTheme}  />
     </div>
   );
 };
