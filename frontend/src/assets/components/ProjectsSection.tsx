@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Github, ExternalLink, Play, Award, Moon, Sun, Sparkles } from 'lucide-react';
 
-const ProjectsSection = () => {
+const ProjectsSection = ({isDarkMode}) => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [isDark, setIsDark] = useState(true);
+
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
 
@@ -59,23 +59,23 @@ const ProjectsSection = () => {
     : projects.filter(project => project.category === activeCategory);
 
  const themeClasses = {
-  background: isDark ? 'bg-black' : 'bg-gray-50',
-  text: isDark ? 'text-white' : 'text-gray-900',
-  muted: isDark ? 'text-gray-400' : 'text-gray-600',
-  card: isDark 
+  background: isDarkMode ? 'bg-black' : 'bg-gray-50',
+  text: isDarkMode ? 'text-white' : 'text-gray-900',
+  muted: isDarkMode ? 'text-gray-400' : 'text-gray-600',
+  card: isDarkMode 
     ? 'bg-black/70 border-neutral-800/70' 
     : 'bg-white/70 border-gray-200/50',
-  button: isDark 
+  button: isDarkMode 
     ? 'bg-black/60 border-neutral-700 hover:bg-neutral-800/70' 
     : 'bg-white/50 border-gray-300 hover:bg-gray-100/50',
-  activeButton: isDark 
+  activeButton: isDarkMode 
     ? 'bg-gradient-to-r from-purple-600 to-pink-600' 
     : 'bg-gradient-to-r from-blue-600 to-indigo-600'
 };
 
 
   return (
-    <div className={`min-h-screen relative overflow-hidden transition-all duration-700 ${themeClasses.background} ${themeClasses.text}`}>
+    <div id='projects' className={`min-h-screen relative overflow-hidden transition-all duration-700 ${themeClasses.background} ${themeClasses.text}`}>
       {/* Dynamic Canvas Background */}
       <canvas
         ref={canvasRef}
@@ -155,7 +155,7 @@ const ProjectsSection = () => {
                         <span 
                           key={tech}
                           className={`px-3 py-1 rounded-lg text-sm font-medium backdrop-blur-sm border ${
-                            isDark ? 'bg-gray-700/50 border-gray-600 text-gray-300' : 'bg-gray-100/70 border-gray-300 text-gray-700'
+                            isDarkMode ? 'bg-gray-700/50 border-gray-600 text-gray-300' : 'bg-gray-100/70 border-gray-300 text-gray-700'
                           }`}
                         >
                           {tech}

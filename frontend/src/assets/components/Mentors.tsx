@@ -31,7 +31,7 @@ const initialMentors = [
 ];
 
 // --- MENTOR CARD COMPONENT ---
-const MentorCard = ({ mentor, isDarkTheme }) => {
+const MentorCard = ({ mentor, isDarkMode }) => {
   const cardRef = useRef(null);
 
   const handleMouseMove = (e) => {
@@ -72,7 +72,7 @@ const MentorCard = ({ mentor, isDarkTheme }) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={`card-container group relative rounded-xl p-8 [perspective:1000px] transition-all duration-300 ${
-        isDarkTheme 
+        isDarkMode 
           ? 'border border-white/10 bg-black hover:border-cyan-400/30' 
           : 'border-2 border-gray-200 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl hover:border-cyan-400/50 hover:-translate-y-1'
       }`}
@@ -82,7 +82,7 @@ const MentorCard = ({ mentor, isDarkTheme }) => {
         className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
           background: `radial-gradient(600px at var(--mouse-x) var(--mouse-y), ${
-            isDarkTheme 
+            isDarkMode 
               ? 'rgba(3, 201, 255, 0.15)' 
               : 'rgba(3, 201, 255, 0.1)'
           }, transparent 80%)`,
@@ -90,7 +90,7 @@ const MentorCard = ({ mentor, isDarkTheme }) => {
       />
       
       {/* Decorative gradient overlay for light theme */}
-      {!isDarkTheme && (
+      {!isDarkMode && (
         <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-cyan-50/50 via-transparent to-blue-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       )}
       
@@ -99,15 +99,15 @@ const MentorCard = ({ mentor, isDarkTheme }) => {
         {/* Mentor Image */}
         <div className="relative mb-6">
           <div className={`absolute inset-0 rounded-full ${
-            isDarkTheme 
+            isDarkMode 
               ? 'bg-gradient-to-r from-cyan-400 to-blue-500' 
               : 'bg-gradient-to-r from-cyan-500 to-blue-600'
           } p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
-            <div className={`w-full h-full rounded-full ${isDarkTheme ? 'bg-black' : 'bg-white'}`} />
+            <div className={`w-full h-full rounded-full ${isDarkMode ? 'bg-black' : 'bg-white'}`} />
           </div>
           <img
             className={`relative w-32 h-32 rounded-full object-cover border-4 transition-all duration-300 ${
-              isDarkTheme 
+              isDarkMode 
                 ? 'border-white/10 group-hover:border-cyan-400/50' 
                 : 'border-gray-300 group-hover:border-cyan-500/70 group-hover:shadow-lg'
             }`}
@@ -119,14 +119,14 @@ const MentorCard = ({ mentor, isDarkTheme }) => {
         {/* Mentor Details */}
         <div className="mb-6">
           <h3 className={`text-2xl font-bold mb-1 transition-colors duration-300 ${
-            isDarkTheme 
+            isDarkMode 
               ? 'text-slate-100' 
               : 'text-slate-800 group-hover:text-slate-900'
           }`}>
             {mentor.name}
           </h3>
           <p className={`text-md font-medium transition-colors duration-300 ${
-            isDarkTheme 
+            isDarkMode 
               ? 'text-cyan-400' 
               : 'text-cyan-600 group-hover:text-cyan-700'
           }`}>
@@ -136,7 +136,7 @@ const MentorCard = ({ mentor, isDarkTheme }) => {
 
         {/* Biography */}
         <p className={`leading-relaxed mb-6 transition-colors duration-300 ${
-          isDarkTheme 
+          isDarkMode 
             ? 'text-slate-400' 
             : 'text-slate-600 group-hover:text-slate-700'
         }`}>
@@ -150,7 +150,7 @@ const MentorCard = ({ mentor, isDarkTheme }) => {
             target="_blank"
             rel="noopener noreferrer"
             className={`transition-all duration-300 transform hover:scale-110 ${
-              isDarkTheme 
+              isDarkMode 
                 ? 'text-slate-500 hover:text-cyan-400' 
                 : 'text-slate-500 hover:text-cyan-600 hover:drop-shadow-md'
             }`}
@@ -163,7 +163,7 @@ const MentorCard = ({ mentor, isDarkTheme }) => {
             target="_blank"
             rel="noopener noreferrer"
             className={`transition-all duration-300 transform hover:scale-110 ${
-              isDarkTheme 
+              isDarkMode 
                 ? 'text-slate-500 hover:text-cyan-400' 
                 : 'text-slate-500 hover:text-cyan-600 hover:drop-shadow-md'
             }`}
@@ -178,26 +178,24 @@ const MentorCard = ({ mentor, isDarkTheme }) => {
 };
 
 // --- MAIN MENTORS COMPONENT ---
-const Mentors = () => {
+const Mentors = ({isDarkMode}) => {
   const [mentors] = useState(initialMentors);
-  const [isDarkTheme, setIsDarkTheme] = useState(true);
 
-  const toggleTheme = () => {
-    setIsDarkTheme(!isDarkTheme);
-  };
+
+
 
   return (
     <section className={`relative ${
-      isDarkTheme 
+      isDarkMode 
         ? 'bg-black text-white' 
         : 'bg-gradient-to-br from-slate-50 via-white to-cyan-50 text-slate-900'
     } h-screen overflow-hidden flex items-center justify-center transition-all duration-500`}>
       
       {/* The StarsCanvas component for the animated background - only in dark theme */}
-      {isDarkTheme && <StarsCanvas isDarkTheme={isDarkTheme} />}
+      {isDarkMode && <StarsCanvas isDarkMode={isDarkMode} />}
 
       {/* Floating elements for light theme */}
-      {!isDarkTheme && (
+      {!isDarkMode && (
         <>
           <div className="absolute top-20 left-10 w-32 h-32 bg-cyan-200/30 rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-20 right-10 w-40 h-40 bg-blue-200/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
@@ -211,50 +209,53 @@ const Mentors = () => {
 
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto ">
-          
+        {/* Section Header */}
+<div className="text-center max-w-3xl mx-auto mb-16">
+  <h2
+    className={`text-4xl md:text-5xl font-extrabold tracking-tight mb-4 ${
+      isDarkMode
+        ? 'bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-500'
+        : 'bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600'
+    }`}
+  >
+    Our Mentors
+  </h2>
+  <p
+    className={`text-lg ${
+      isDarkMode ? 'text-slate-400' : 'text-slate-600'
+    }`}
+  >
+    Guidance from the best in the field, dedicated to fostering the next generation of innovators.
+  </p>
 
-          <div className=" w8-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
-      <h2 className={`text-4xl md:text-5xl font-extrabold tracking-tight mb-4 ${
-            isDarkTheme 
-              ? 'bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-500' 
-              : 'bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600'
-          }`}>
-            Our Mentors
-          </h2>
-      <div className="w-[40rem] h-40 relative">
-        {/* Gradients */}
-        <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm" />
-        <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4" />
-        <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-[5px] w-1/4 blur-sm" />
-        <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-px w-1/4" />
-          
-        {/* Core component */}
-       
-        <SparklesCore
-          background="transparent"
-          minSize={0.4}
-          maxSize={2}
-          particleDensity={300}
-          className="w-full h-full"
-          particleColor="#FFFFFF"
-        />
+ {isDarkMode && (
+    <div className="w-[40rem] h-40 relative mx-auto">
+      {/* Gradients */}
+      <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm" />
+      <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4" />
+      <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-[5px] w-1/4 blur-sm" />
+      <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-px w-1/4" />
 
-        {/* Radial Gradient to prevent sharp edges */}
-        <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_0%,white)]">
-  
-        </div>
-          
-      </div>
+      {/* Core component */}
+      <SparklesCore
+        background="transparent"
+        minSize={0.4}
+        maxSize={2}
+        particleDensity={300}
+        className="w-full h-full"
+        particleColor="#FFFFFF"
+      />
+
+      <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_0%,white)]" />
     </div>
+  )}
+</div>
 
-          
-        </div>
 
         {/* Mentors Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 max-w-4xl mx-auto">
           {mentors.map((mentor) => (
-            <MentorCard key={mentor.id} mentor={mentor} isDarkTheme={isDarkTheme} />
+            <MentorCard key={mentor.id} mentor={mentor} isDarkMode={isDarkMode} />
           ))}
         </div>
       </div>

@@ -135,10 +135,10 @@ const Header = () => {
               Projects
             </button>
             <button 
-              onClick={() => scrollToSection('testimonials')}
+              onClick={() => scrollToSection('team')}
               className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-600 ease-out text-lg font-bold`}
             >
-              Testimonials
+              Team
             </button>
             <Button 
               onClick={() => scrollToSection('contact')}

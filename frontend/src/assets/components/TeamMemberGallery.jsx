@@ -45,15 +45,13 @@ const galleryImages = [
   },
 ];
 
-const NlpClubGallery = () => {
+const NlpClubGallery = ({isDarkMode}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isDark, setIsDark] = useState(true); // Default to dark theme
+
   const [imageLoadStatus, setImageLoadStatus] = useState({});
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-  };
+ 
 
   const openModal = (index) => {
     setCurrentImageIndex(index);
@@ -90,7 +88,7 @@ const NlpClubGallery = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [modalOpen]);
 
- const themeClasses = isDark ? {
+ const themeClasses = isDarkMode ? {
   bg: 'bg-black',
   cardBg: 'bg-black', // Or use a very dark gray if needed
   text: 'text-white',
@@ -109,7 +107,7 @@ const NlpClubGallery = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${themeClasses.bg}`}>
+    <div id="team" className={`min-h-screen transition-all duration-500  ${themeClasses.bg}`}>
       
       {/* Theme Toggle */}
 
@@ -126,18 +124,18 @@ const NlpClubGallery = () => {
         </div>
 
         {/* Image Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
+        <div className="grid p-2  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
           {galleryImages.map((image, index) => (
             <div
               key={image.id}
-              className="group overflow-hidden rounded-3xl cursor-pointer transform transition-all duration-500 hover:scale-105  border transition-all duration-700 hover:scale-105 hover:shadow-2xl bg-black/70  border-neutral-800/70 "
+              className="group overflow-hidden rounded-3xl cursor-pointer transform transition-all   hover:scale-105  border  duration-700  hover:shadow-2xl   border-neutral-800/70 "
               onClick={() => openModal(index)}
             >
-              <div className={`relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 ${themeClasses.cardBg}`}>
+              <div className={`relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all  h-full duration-500 ${themeClasses.cardBg}`}>
                 {/* Image Container */}
                 <div className="relative h-64 overflow-hidden">
                   {!imageLoadStatus[image.id] && (
-                    <div className={`absolute inset-0 ${isDark ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
+                    <div className={`absolute inset-0 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} animate-pulse`}></div>
                   )}
                   <img 
                     src={image.src} 
