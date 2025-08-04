@@ -16,6 +16,21 @@ const Footer = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Load Visme form script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://static-bundles.visme.co/forms/vismeforms-embed.js';
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      const vismeScript = document.querySelector('script[src="https://static-bundles.visme.co/forms/vismeforms-embed.js"]');
+      if (vismeScript) {
+        vismeScript.remove();
+      }
+    };
+  }, []);
+
   const quickLinks = [
     { name: 'About Us', href: '#about', description: 'Learn about our mission' },
     { name: 'Research', href: '#projects', description: 'Explore our projects' },
@@ -93,15 +108,18 @@ const Footer = () => {
                 Take the first step towards advancing your NLP skills and being part of a 
                 community that's shaping the future of artificial intelligence.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="group bg-white text-black px-8 py-4 text-lg font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center">
-                  <Users className="mr-2 w-5 h-5 group-hover:animate-pulse" />
-                  Become a Member
-                </button>
-                <button className="group border-2 border-white text-white px-8 py-4 text-lg font-semibold rounded-xl hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
-                  <Calendar className="mr-2 w-5 h-5 group-hover:animate-spin" />
-                  Attend Next Meeting
-                </button>
+              
+              <div className="w-full flex justify-center">
+                <div 
+                  className="visme_d" 
+                  data-title="Contact Form" 
+                  data-url="op607kjy-contact-form" 
+                  data-domain="forms"
+                  data-full-page="false" 
+                  data-min-height="500px"
+                  data-form-id="138857"
+                  style={{width: '100%'}}
+                ></div>
               </div>
             </div>
           </div>
