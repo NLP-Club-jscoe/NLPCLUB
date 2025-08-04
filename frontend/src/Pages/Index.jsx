@@ -1,6 +1,5 @@
 import Header from "../assets/components/Header";
 import HeroSection from "../assets/components/HeroSection";
-import AboutSection from "../assets/components/AboutSection";
 import FeaturesSection from "../assets/components/FeaturesSection";
 import ProjectsSection from "../assets/components/ProjectsSection";
 import Mentors from "../assets/components/Mentors";

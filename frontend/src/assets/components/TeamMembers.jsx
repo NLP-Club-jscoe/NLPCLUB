@@ -18,7 +18,7 @@ const initialTeamMembers = [
     name: 'Neha Jakate',
     role: 'Co-Lead',
     bio: 'Highly driven into deep interest in AI/ML, Data Science, Generative AI, Large Language Models, and Vision-Language Models, pushing the boundaries of intelligent systems.',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+    image: 'neha.jpg',
     social: {
       github: 'https://github.com/NEHAJAKATE ',
       linkedin: 'https://www.linkedin.com/in/neha-jakate-13853728b',
@@ -28,11 +28,11 @@ const initialTeamMembers = [
     id: 3,
     name: 'Mayank Chaudhari',
     role: 'Management Lead',
-    bio: 'Working on cross-lingual NLP applications.',
+    bio: 'DevOps enthusiast with a strong passion for AI prompting and Python development — combining architectural thinking, DSA skills, and team leadership to drive innovation.',
     image: 'mayank.png',
     social: {
-      linkedin: 'https://linkedin.com/in/mayank',
-      github: 'https://github.com/mayank'
+      linkedin: 'https://linkedin.com/in/mayankchaudhari2004',
+      github: 'https://github.com/Mayank11104'
     }
   },
   {
@@ -61,11 +61,11 @@ const initialTeamMembers = [
     id: 6,
     name: 'Saee Bhagwan Gaikwad',
     role: 'UI/UX Developer',
-    bio: 'Developing scalable NLP services and APIs.',
+    bio: 'Creative UI/UX designer skilled in Figma and Adobe tools, with a strong focus on crafting clean, responsive interfaces. Also a React-based web developer exploring AI and NLP integration.',
     image: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=150&h=150&fit=crop&crop=face',
     social: {
-      github: 'https://github.com/rahul',
-      linkedin: 'https://linkedin.com/in/rahul'
+      github: 'https://github.com/SaeeGaikwad',
+      linkedin: 'https://linkedin.com/in/saee-gaikwad-147054374'
     }
   },
   {
@@ -147,7 +147,7 @@ const initialTeamMembers = [
   },
   {
     id: 14,
-    name: 'Amit Kumar',
+    name: 'Manjuli',
     role: 'Member',
     bio: 'Optimizing model deployment and monitoring systems.',
     image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',

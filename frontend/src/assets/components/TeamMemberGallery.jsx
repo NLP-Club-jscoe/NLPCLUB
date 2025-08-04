@@ -3,21 +3,21 @@ import React, { useState, useEffect } from 'react';
 const galleryImages = [
   { 
     id: 1, 
-    src: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&h=300&fit=crop', 
+    src: 'act1.jpg', 
     alt: 'Team collaboration',
     description: 'Our team collaborating on a new sentiment analysis model for social media trends.',
     date: '2024-03-15'
   },
   { 
     id: 2, 
-    src: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&h=300&fit=crop',
+    src: 'act2.jpg',
     alt: 'Workshop session',
     description: 'An insightful workshop on Transformer architectures and their real-world applications.',
     date: '2024-02-20'
   },
   { 
     id: 3, 
-    src: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop', 
+    src: 'act3.jpg', 
     alt: 'Live demo',
     description: 'Live demo session of our award-winning conversational AI project.',
     date: '2024-04-10'

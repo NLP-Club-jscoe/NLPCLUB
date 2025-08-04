@@ -33,28 +33,21 @@ const Footer = () => {
 
   const quickLinks = [
     { name: 'About Us', href: '#about', description: 'Learn about our mission' },
-    { name: 'Research', href: '#projects', description: 'Explore our projects' },
-    { name: 'Events', href: '#events', description: 'Join our activities' },
     { name: 'Join Club', href: '#contact', description: 'Become a member' }
   ];
 
   const resources = [
-    { name: 'Getting Started', href: '#', icon: ExternalLink, new: true },
-    { name: 'Tutorials', href: '#', icon: ExternalLink },
-    { name: 'Documentation', href: '#', icon: ExternalLink },
     { name: 'GitHub Repos', href: '#', icon: ExternalLink, popular: true }
   ];
 
   const contact = [
     { icon: Mail, text: 'nlpclub@university.edu', href: 'mailto:nlpclub@university.edu', type: 'email' },
-    { icon: MapPin, text: 'Computer Science Building, Room 204', href: '#', type: 'location' },
-    { icon: Calendar, text: 'Weekly meetings: Fridays 6 PM', href: '#', type: 'schedule' }
+    { icon: MapPin, text: 'Hardware lab, B Building, JSCOE', href: '#', type: 'location' }
   ];
 
   const socialLinks = [
-    { icon: Twitter, href: '#', name: 'Twitter', followers: '2.1K' },
-    { icon: Github, href: '#', name: 'GitHub', followers: '850' },
-    { icon: Linkedin, href: '#', name: 'LinkedIn', followers: '1.5K' }
+    { icon: Github, href: 'https://github.com/orgs/NLP-Club-jscoe/dashboard', name: 'GitHub' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/company/nlpclubjscoe', name: 'LinkedIn'}
   ];
 
   const scrollToSection = (sectionId) => {
@@ -151,11 +144,7 @@ const Footer = () => {
                     >
                       <social.icon className="w-5 h-5" />
                     </a>
-                    {hoveredSocial === index && (
-                      <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-white text-black px-3 py-1 rounded-lg text-sm font-medium whitespace-nowrap animate-fadeIn">
-                        {social.followers} followers
-                      </div>
-                    )}
+                    
                   </div>
                 ))}
               </div>
