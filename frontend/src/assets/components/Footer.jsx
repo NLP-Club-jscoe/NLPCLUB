@@ -90,9 +90,7 @@ const Footer = () => {
           <div className="text-center mb-20">
             <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-3xl p-12 hover:bg-gray-900/70 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-white/10">
               <div className="mb-6">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full mb-6 animate-bounce">
-                  <Brain className="w-10 h-10 text-black" />
-                </div>
+                
                 <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                   Ready to <span className="text-white">Join</span> Us?
                 </h2>

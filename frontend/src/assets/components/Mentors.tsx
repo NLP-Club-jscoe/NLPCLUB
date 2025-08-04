@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import StarsCanvas from './StarCanvas';
+import {SparklesCore} from './ui/sparkles';
  // Make sure this path is correct
 
 // --- DATA ---
@@ -210,21 +211,44 @@ const Mentors = () => {
 
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className={`text-4xl md:text-5xl font-extrabold tracking-tight mb-4 ${
+        <div className="text-center max-w-3xl mx-auto ">
+          
+
+          <div className=" w8-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
+      <h2 className={`text-4xl md:text-5xl font-extrabold tracking-tight mb-4 ${
             isDarkTheme 
               ? 'bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-500' 
               : 'bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-blue-600'
           }`}>
             Our Mentors
           </h2>
-          <p className={`text-lg ${
-            isDarkTheme 
-              ? 'text-slate-400' 
-              : 'text-slate-600'
-          }`}>
-            Guidance from the best in the field, dedicated to fostering the next generation of innovators.
-          </p>
+      <div className="w-[40rem] h-40 relative">
+        {/* Gradients */}
+        <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm" />
+        <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4" />
+        <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-[5px] w-1/4 blur-sm" />
+        <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-px w-1/4" />
+          
+        {/* Core component */}
+       
+        <SparklesCore
+          background="transparent"
+          minSize={0.4}
+          maxSize={2}
+          particleDensity={300}
+          className="w-full h-full"
+          particleColor="#FFFFFF"
+        />
+
+        {/* Radial Gradient to prevent sharp edges */}
+        <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_0%,white)]">
+  
+        </div>
+          
+      </div>
+    </div>
+
+          
         </div>
 
         {/* Mentors Grid */}

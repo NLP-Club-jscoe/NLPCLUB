@@ -126,11 +126,11 @@ const NlpClubGallery = () => {
         </div>
 
         {/* Image Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
           {galleryImages.map((image, index) => (
             <div
               key={image.id}
-              className="group cursor-pointer transform transition-all duration-500 hover:scale-105"
+              className="group overflow-hidden rounded-3xl cursor-pointer transform transition-all duration-500 hover:scale-105  border transition-all duration-700 hover:scale-105 hover:shadow-2xl bg-black/70  border-neutral-800/70 "
               onClick={() => openModal(index)}
             >
               <div className={`relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 ${themeClasses.cardBg}`}>

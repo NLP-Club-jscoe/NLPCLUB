@@ -332,7 +332,7 @@ const ScrollVideoFrames = () => {
           {/* Left Side Text - Now positioned at TOP */}
           <div
             ref={leftTextRef}
-            className="absolute left-8 md:left-16 top-20 md:top-24 pointer-events-none max-w-xs"
+            className="absolute left-8 md:left-16 top-24 md:top-24 pointer-events-none max-w-xs"
             style={{
               transform: "translateX(-100px)",
               opacity: 0,
