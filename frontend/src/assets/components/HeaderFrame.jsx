@@ -10,6 +10,7 @@ const HeaderFrame = ({isDarkMode}) => {
   const leftTextRef = useRef(null);
   const rightTextRef = useRef(null);
   const totalFrames = 140;
+  const secondFrameCount = 95;
   const currentFrameRef = useRef({ current: 0 });
 
   // Preload images for both themes
@@ -94,7 +95,17 @@ const HeaderFrame = ({isDarkMode}) => {
 
       // Loop 2: Lazily load remaining primary frames
       const remainingPrimaryPromises = [];
-      for (let i = initialFrameCount + 1; i <= totalFrames; i++) {
+      for (let i = initialFrameCount + 1; i <= secondFrameCount ; i++) {
+        const frameNumber = String(i).padStart(5, '0');
+        const img = new Image();
+        img.src = `/frames/${primaryTheme}/frame_${frameNumber}.webp`;
+        remainingPrimaryPromises.push(new Promise(resolve => {
+          img.onload = () => resolve({ img, index: i - 1 });
+          img.onerror = () => resolve({ img: null, index: i - 1 });
+        }));
+      }
+      
+      for (let i = secondFrameCount + 1; i <= totalFrames; i++) {
         const frameNumber = String(i).padStart(5, '0');
         const img = new Image();
         img.src = `/frames/${primaryTheme}/frame_${frameNumber}.webp`;
