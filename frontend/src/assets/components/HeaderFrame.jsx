@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 
-const ScrollVideoFrames = ({isDarkMode}) => {
+const HeaderFrame = ({isDarkMode}) => {
   const [currentFrame, setCurrentFrame] = useState(0);
 
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -40,55 +40,72 @@ const ScrollVideoFrames = ({isDarkMode}) => {
   // Get current text based on theme
   const currentText = isDarkMode ? textContent.dark : textContent.light;
 
-  // Memoized image preloading function
-  const preloadImages = useCallback(async () => {
-    const darkImagePromises = [];
-    const lightImagePromises = [];
-
-    for (let i = 1; i <= totalFrames; i++) {
-      const frameNumber = String(i).padStart(5, "0");
-      const frameNumberDark = String(i).padStart(5, "0");
-
-      // Dark theme images
-      const darkImg = new Image();
-      darkImg.src = `/frames/dark/frame_${frameNumberDark}.webp`;
-      darkImg.loading = "eager";
-      darkImagePromises.push(
-        new Promise((resolve, reject) => {
-          darkImg.onload = () => resolve(darkImg);
-          darkImg.onerror = reject;
-        })
-      );
-
-      // Light theme images
-      const lightImg = new Image();
-      lightImg.src = `/frames/light/frame_${frameNumber}.webp`;
-      lightImg.loading = "eager";
-      lightImagePromises.push(
-        new Promise((resolve, reject) => {
-          lightImg.onload = () => resolve(lightImg);
-          lightImg.onerror = reject;
-        })
-      );
-    }
-
-    try {
-      const [darkImgs, lightImgs] = await Promise.all([
-        Promise.all(darkImagePromises),
-        Promise.all(lightImagePromises),
-      ]);
-      setDarkImages(darkImgs);
-      setLightImages(lightImgs);
-      setImagesLoaded(true);
-    } catch (error) {
-      console.error("Error loading images:", error);
-    }
-  }, [totalFrames]);
-
-  // Preload images on mount
+    // Image preloading logic
   useEffect(() => {
-    preloadImages();
-  }, [preloadImages]);
+    let isMounted = true;
+
+    const preloadThemeImages = (theme, isPrimary) => {
+      const imagePromises = [];
+      const imageArray = [];
+      for (let i = 1; i <= totalFrames; i++) {
+        const frameNumber = String(i).padStart(5, '0');
+        const img = new Image();
+        img.src = `/frames/${theme}/frame_${frameNumber}.webp`;
+        img.loading = isPrimary ? 'eager' : 'lazy';
+        imagePromises.push(
+          new Promise((resolve, reject) => {
+            img.onload = () => {
+              imageArray[i - 1] = img;
+              resolve();
+            };
+            img.onerror = reject;
+          })
+        );
+      }
+      return Promise.all(imagePromises).then(() => imageArray);
+    };
+
+    const initialLoad = async () => {
+      const primaryTheme = isDarkMode ? 'dark' : 'light';
+      const secondaryTheme = isDarkMode ? 'light' : 'dark';
+
+      try {
+        // Preload primary theme images first and show the content
+        const primaryImages = await preloadThemeImages(primaryTheme, true);
+        if (isMounted) {
+          if (primaryTheme === 'dark') {
+            setDarkImages(primaryImages);
+          } else {
+            setLightImages(primaryImages);
+          }
+          setImagesLoaded(true);
+        }
+
+        // Then, lazily preload the secondary theme images in the background
+        preloadThemeImages(secondaryTheme, false)
+          .then((secondaryImages) => {
+            if (isMounted) {
+              if (secondaryTheme === 'dark') {
+                setDarkImages(secondaryImages);
+              } else {
+                setLightImages(secondaryImages);
+              }
+            }
+          })
+          .catch((error) => {
+            console.error(`Failed to preload ${secondaryTheme} images:`, error);
+          });
+      } catch (error) {
+        console.error(`Failed to preload ${primaryTheme} images:`, error);
+      }
+    };
+
+    initialLoad();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isDarkMode, totalFrames]);
 
   // GSAP Text Animation for left and right text with smooth scroll-based fade in
   useEffect(() => {
@@ -416,4 +433,4 @@ const ScrollVideoFrames = ({isDarkMode}) => {
   );
 };
 
-export default ScrollVideoFrames;
+export default HeaderFrame;
