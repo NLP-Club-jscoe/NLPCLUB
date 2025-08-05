@@ -51,7 +51,7 @@ const ScrollVideoFrames = ({isDarkMode}) => {
 
       // Dark theme images
       const darkImg = new Image();
-      darkImg.src = `/frames/dark/frame_${frameNumberDark}.png`;
+      darkImg.src = `/frames/dark/frame_${frameNumberDark}.webp`;
       darkImg.loading = "eager";
       darkImagePromises.push(
         new Promise((resolve, reject) => {
@@ -62,7 +62,7 @@ const ScrollVideoFrames = ({isDarkMode}) => {
 
       // Light theme images
       const lightImg = new Image();
-      lightImg.src = `/frames/light/frame_${frameNumber}.png`;
+      lightImg.src = `/frames/light/frame_${frameNumber}.webp`;
       lightImg.loading = "eager";
       lightImagePromises.push(
         new Promise((resolve, reject) => {
