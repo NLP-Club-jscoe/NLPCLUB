@@ -10,7 +10,7 @@ const HeaderFrame = ({isDarkMode}) => {
   const leftTextRef = useRef(null);
   const rightTextRef = useRef(null);
   const totalFrames = 140;
-  const secondFrameCount = 80;
+  const secondFrameCount = 100;
   const thirdFrameCount = 120;
   const currentFrameRef = useRef({ current: 0 });
 
@@ -45,7 +45,7 @@ const HeaderFrame = ({isDarkMode}) => {
     // Image preloading logic
   useEffect(() => {
     let isMounted = true;
-    const initialFrameCount = 50; // Number of frames to load initially
+    const initialFrameCount = 80; // Number of frames to load initially
 
     const preloadImageRange = (theme, start, end, isLazy) => {
       const promises = [];
