@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, Suspense, lazy } from "react";
 import Header from "../assets/components/Header";
-import HeroSection from "../assets/components/HeroSection";
-import ProjectsSection from "../assets/components/ProjectsSection";
-import Mentors from "../assets/components/Mentors";
-import Footer from "../assets/components/Footer";
-import HeaderFrame from "../assets/components/HeaderFrame";
 import Head from "../assets/components/Head";
-import TeamMembers from "../assets/components/TeamMembers";
-import NlpClubGallery from "../assets/components/TeamMemberGallery";
-import AboutUsSection from "../assets/components/aboutus";
+
+const AboutUsSection = lazy(() => import("../assets/components/aboutus"));
+const ProjectsSection = lazy(() =>
+  import("../assets/components/ProjectsSection")
+);
+const NlpClubGallery = lazy(() =>
+  import("../assets/components/TeamMemberGallery")
+);
+const Mentors = lazy(() => import("../assets/components/Mentors"));
+const TeamMembers = lazy(() => import("../assets/components/TeamMembers"));
+const Footer = lazy(() => import("../assets/components/Footer"));
 
 const Index = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -73,12 +76,14 @@ const Index = () => {
       {/* Pass isDarkMode to all components */}
       <Header isDarkMode={isDarkMode} />
       <Head isDarkMode={isDarkMode} />
-      <AboutUsSection isDarkMode={isDarkMode} />
-      <ProjectsSection isDarkMode={isDarkMode} />
-      <NlpClubGallery isDarkMode={isDarkMode} />
-      <Mentors isDarkMode={isDarkMode} />
-      <TeamMembers isDarkMode={isDarkMode} />
-      <Footer isDarkMode={isDarkMode} toggleTheme={toggleTheme}  />
+      <Suspense fallback={<div>Loading...</div>}>
+        <AboutUsSection isDarkMode={isDarkMode} />
+        <ProjectsSection isDarkMode={isDarkMode} />
+        <NlpClubGallery isDarkMode={isDarkMode} />
+        <Mentors isDarkMode={isDarkMode} />
+        <TeamMembers isDarkMode={isDarkMode} />
+        <Footer isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+      </Suspense>
     </div>
   );
 };
