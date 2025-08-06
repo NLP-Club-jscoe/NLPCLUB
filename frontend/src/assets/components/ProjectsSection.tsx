@@ -25,7 +25,7 @@ const ProjectsSection = ({isDarkMode}) => {
     title: 'AI Interview Agent',
     description:
       'Modular AI system that conducts round-wise technical interviews with voice, resume parsing, and anti-cheat monitoring. Powered by real-time STT, TTS, and RAG pipelines.',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&crop=faces', // Added image
+    image: 'agent.png', // Added image
     technologies: ['LangChain', 'FastAPI', 'PyTorch', 'Groq API', 'React'],
     gradient: 'from-emerald-600 to-teal-600',
     achievements: ['Supports 5+ job roles', 'RAG-based question generation', 'Voice-based interaction prototype ready'],
@@ -126,7 +126,7 @@ const ProjectsSection = ({isDarkMode}) => {
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                         {/* Overlay gradient for better text readability */}
-                        <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-60`}></div>
+                        
                       </>
                     ) : null}
                     

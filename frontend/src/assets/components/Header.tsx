@@ -123,12 +123,6 @@ const Header = () => {
               About
             </button>
             <button 
-              onClick={() => scrollToSection('features')}
-              className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-600 ease-out text-lg font-bold`}
-            >
-              Features
-            </button>
-            <button 
               onClick={() => scrollToSection('projects')}
               className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-600 ease-out text-lg font-bold`}
             >
@@ -136,6 +130,12 @@ const Header = () => {
             </button>
             <button 
               onClick={() => scrollToSection('team')}
+              className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-600 ease-out text-lg font-bold`}
+            >
+              Gallery
+            </button>
+             <button 
+              onClick={() => scrollToSection('members')}
               className={`${themeStyles.textColor} ${themeStyles.hoverColor} transition-all duration-600 ease-out text-lg font-bold`}
             >
               Team

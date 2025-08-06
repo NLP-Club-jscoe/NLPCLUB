@@ -5,43 +5,43 @@ const galleryImages = [
     id: 1, 
     src: 'act1.jpg', 
     alt: 'Team collaboration',
-    description: 'Our team collaborating on a new sentiment analysis model for social media trends.',
-    date: '2024-03-15'
+    description: 'Showcasing our participation in Smart India Hackathon 2024 with a government-backed project on Alumni Connect, under the mentorship of the Government of Gujarat.',
+    date: '2024-09-15'
   },
   { 
     id: 2, 
     src: 'act2.jpg',
     alt: 'Workshop session',
-    description: 'An insightful workshop on Transformer architectures and their real-world applications.',
-    date: '2024-02-20'
+    description: 'Team working on Smart India Hackathon 2024 solution focused on Bus Route Prediction and Management, in collaboration with Delhi Transport Corporation (DTC).',
+    date: '2024-09-15'
   },
   { 
     id: 3, 
     src: 'act3.jpg', 
     alt: 'Live demo',
-    description: 'Live demo session of our award-winning conversational AI project.',
-    date: '2024-04-10'
+    description: 'Industrial visit to Bharat Forge AI Research Lab, exploring cutting-edge innovations in artificial intelligence and real-time industrial applications.',
+    date: '2025-02-10'
   },
   { 
     id: 4, 
-    src: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=500&h=300&fit=crop', 
+    src: 'act5.jpeg', 
     alt: 'Hackathon winners',
-    description: 'Celebrating the winners of our annual 24-hour NLP hackathon.',
-    date: '2024-01-25'
+    description: 'Celebrating International Women’s Day with GDG Pune through engaging sessions and networking with women tech leaders and innovators.',
+    date: '2025-03-15'
   },
   { 
     id: 5, 
-    src: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=500&h=300&fit=crop',  
+    src: 'act4.jpeg',  
     alt: 'Deep learning session',
-    description: 'Deep dive into the complex architectures that power modern language models.',
-    date: '2024-03-08'
+    description: 'DevOps and CI/CD workshop hosted by Infobip at Coditas, where students explored real-world practices in modern software development pipelines.',
+    date: '2025-03-25'
   },
   { 
     id: 6, 
-    src: 'https://images.unsplash.com/photo-1543269664-647b39c49ea2?w=500&h=300&fit=crop', 
+    src: 'act6.jpeg', 
     alt: 'Team photo',
-    description: 'The brilliant minds of the NLP Club after a successful semester.',
-    date: '2024-04-30'
+    description: 'Inside the NLP Club workspace, where brilliant minds brainstorm, build, and collaborate on next-gen language AI projects.',
+    date: '2025-08-02'
   },
 ];
 

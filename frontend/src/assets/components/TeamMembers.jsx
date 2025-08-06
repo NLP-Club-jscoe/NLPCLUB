@@ -10,14 +10,14 @@ import {
 const initialTeamMembers = [
   {
     id: 1,
-    name: "Shreyash Gadekar",
+    name: "Shreyash Sudhakar Gadekar",
     role: "Club Lead",
-    bio: "NLP enthusiast with focus on transformer architectures.",
+    bio: "Versatile programmer with cross-domain experience, strong problem-solving skills, and a focus on building efficient, real-world solutions. Quick learner who thrives in dynamic environments.",
     image:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
     social: {
-      linkedin: "https://linkedin.com/in/shreyash",
-      github: "https://github.com/shreyash",
+      linkedin: "https://linkedin.com/in/shreyashgadekar",
+      github: "https://github.com/Shreyash68",
     },
   },
   {
@@ -68,7 +68,7 @@ const initialTeamMembers = [
   {
     id: 6,
     name: "Saee Bhagwan Gaikwad",
-    role: "UI/UX Developer",
+    role: "UI/UX Designer",
     bio: "Creative UI/UX designer skilled in Figma and Adobe tools, with a strong focus on crafting clean, responsive interfaces. Also a React-based web developer exploring AI and NLP integration.",
     image:
       "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=150&h=150&fit=crop&crop=face",
@@ -81,9 +81,9 @@ const initialTeamMembers = [
     id: 7,
     name: "Parth Mahale",
     role: "Software Developer",
-    bio: "Creating intuitive interfaces for NLP applications.",
+    bio: "Driven Software Developer combining DSA proficiency with backend development expertise to solve real-world problems.",
     image:
-      "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=150&h=150&fit=crop&crop=face",
+      "parth.jpg",
     social: {
       linkedin: "https://linkedin.com/in/priya",
       github: "https://github.com/priya",
@@ -93,21 +93,21 @@ const initialTeamMembers = [
     id: 8,
     name: "Vaidehi Sachin Amrutkar",
     role: "ML Developer",
-    bio: "Exploring advanced NLP models and architectures.",
+    bio: "AI & ML enthusiast driven by innovation, passionate about solving real-world problems through intelligent solutions. Skilled in Data Structures and Algorithms, continuously learning and building impactful projects that push boundaries.",
     image:
       "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face",
     social: {
-      github: "https://github.com/vikram",
-      linkedin: "https://linkedin.com/in/vikram",
+      github: "https://github.com/VAIDEHI-28",
+      linkedin: "https://linkedin.com/in/vaidehi-amrutkar-419b02293",
     },
   },
   {
     id: 9,
     name: "Priyal Kothari",
     role: "Full Stack Developer",
-    bio: "Focusing on multilingual NLP and transfer learning.",
+    bio: "Full Stack Developer skilled in building dynamic web applications using React, Node.js, and MongoDB. Passionate about delivering clean, efficient, and user-friendly solutions.",
     image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+      "priyal.jpg",
     social: {
       linkedin: "https://linkedin.com/in/anjali",
       github: "https://github.com/anjali",
@@ -117,36 +117,36 @@ const initialTeamMembers = [
     id: 10,
     name: "Tejas Deshmukh",
     role: "AI Developer",
-    bio: "Managing infrastructure for NLP deployments.",
+    bio: "Passionate about exploring emerging AI/ML technologies, with a keen interest in learning and building innovative solutions.",
     image:
-      "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face",
+      "Exploring new emerging techs in ai-ml and like to learn and develop",
     social: {
-      github: "https://github.com/arjun",
-      linkedin: "https://linkedin.com/in/arjun",
+      github: "https://github.com/Tejas22096",
+      linkedin: "https://linkedin.com/in/tejas-deshmukh112305",
     },
   },
   {
     id: 11,
     name: "Shristi Dube",
     role: "Full Stack Developer",
-    bio: "Building data pipelines for NLP processing.",
+    bio: "Focused on developing scalable full-stack applications with clean, responsive frontends, robust backend systems, and integration of APIs and authentication ",
     image:
       "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=150&h=150&fit=crop&crop=face",
     social: {
-      linkedin: "https://linkedin.com/in/meera",
-      github: "https://github.com/meera",
+      linkedin: "https://linkedin.com/in/shristi-dubey-5a4886284",
+      github: "https://github.com/sheistidubs101",
     },
   },
   {
     id: 12,
     name: "Abhishek Bhabad",
-    role: "",
-    bio: "Implementing cutting-edge NLP solutions.",
+    role: "Aspiring Full Stack Developer",
+    bio: "Beginner frontend developer exploring intuitive UI design and learning backend development with FastAPI.",
     image:
       "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face",
     social: {
-      github: "https://github.com/karthik",
-      linkedin: "https://linkedin.com/in/karthik",
+      github: "https://github.com/abhishek-bhabad-a36baa2b3",
+      linkedin: "https://linkedin.com/in/nothingstep159       ",
     },
   },
   {
@@ -528,7 +528,7 @@ const TeamMembers = ({ isDarkMode }) => {
   };
 
   return (
-    <div
+    <div id="members"
       className={`${
         isDarkMode ? "bg-black" : "bg-gray-50"
       } transition-colors duration-300`}

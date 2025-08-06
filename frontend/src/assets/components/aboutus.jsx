@@ -83,28 +83,16 @@ const AboutUsSection = ({ isDarkMode }) => {
                 : "border border-gray-200 bg-white shadow-sm"
             }`}
           >
-            <p
-              className={`text-xl md:text-2xl leading-relaxed mb-6 font-light ${introTextColor}`}
-            >
-              We are{" "}
-              <span
-                className={`font-semibold ${
-                  isDarkMode ? "text-white" : "text-orange-600"
-                }`}
-              >
-                TechForward
-              </span>
-              , a dynamic community of passionate developers, designers, and
-              innovators dedicated to pushing the boundaries of technology with
-              creativity, curiosity, and collaboration.
-            </p>
-            <p
-              className={`text-lg md:text-xl leading-relaxed font-light ${subTextColor}`}
-            >
-              Together, we're building the future of tech, one innovative
-              solution at a time. 🚀 Whether it's AI, web development, or
-              open-source contributions — we thrive on solving real problems.
-            </p>
+           <p className="text-xl md:text-2xl leading-relaxed mb-6 font-light text-gray-200">
+      In Shaping future-ready Computer Engineers through Excellence in Education, Innovation and Imapct.
+    </p>
+    <p className="text-lg md:text-xl leading-relaxed font-light text-gray-400">
+      We are Commited to deliver cutting Edge Research , and Nuturing innovative Mindset.
+    </p>
+     <p className="text-lg md:text-xl leading-relaxed font-light text-gray-400">
+      Developing a Leading Technical centre grooming Entrepreneurship and Confident Enginners.
+    </p>
+
           </div>
         </div>
 

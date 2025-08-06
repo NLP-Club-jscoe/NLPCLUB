@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 
-const ScrollVideoFrames = ({isDarkMode}) => {
+const HeaderFrame = ({isDarkMode}) => {
   const [currentFrame, setCurrentFrame] = useState(0);
 
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -10,12 +10,14 @@ const ScrollVideoFrames = ({isDarkMode}) => {
   const leftTextRef = useRef(null);
   const rightTextRef = useRef(null);
   const totalFrames = 140;
+  const secondFrameCount = 100;
+  const thirdFrameCount = 120;
   const currentFrameRef = useRef({ current: 0 });
 
   // Preload images for both themes
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [darkImages, setDarkImages] = useState([]);
-  const [lightImages, setLightImages] = useState([]);
+  const [darkImages, setDarkImages] = useState(Array(totalFrames).fill(null));
+  const [lightImages, setLightImages] = useState(Array(totalFrames).fill(null));
   const [titlesVisible, setTitlesVisible] = useState(true); // Start with titles visible
 
   // Text content for different frames/themes
@@ -40,55 +42,150 @@ const ScrollVideoFrames = ({isDarkMode}) => {
   // Get current text based on theme
   const currentText = isDarkMode ? textContent.dark : textContent.light;
 
-  // Memoized image preloading function
-  const preloadImages = useCallback(async () => {
-    const darkImagePromises = [];
-    const lightImagePromises = [];
-
-    for (let i = 1; i <= totalFrames; i++) {
-      const frameNumber = String(i).padStart(5, "0");
-      const frameNumberDark = String(i).padStart(5, "0");
-
-      // Dark theme images
-      const darkImg = new Image();
-      darkImg.src = `/frames/dark/frame_${frameNumberDark}.png`;
-      darkImg.loading = "eager";
-      darkImagePromises.push(
-        new Promise((resolve, reject) => {
-          darkImg.onload = () => resolve(darkImg);
-          darkImg.onerror = reject;
-        })
-      );
-
-      // Light theme images
-      const lightImg = new Image();
-      lightImg.src = `/frames/light/frame_${frameNumber}.png`;
-      lightImg.loading = "eager";
-      lightImagePromises.push(
-        new Promise((resolve, reject) => {
-          lightImg.onload = () => resolve(lightImg);
-          lightImg.onerror = reject;
-        })
-      );
-    }
-
-    try {
-      const [darkImgs, lightImgs] = await Promise.all([
-        Promise.all(darkImagePromises),
-        Promise.all(lightImagePromises),
-      ]);
-      setDarkImages(darkImgs);
-      setLightImages(lightImgs);
-      setImagesLoaded(true);
-    } catch (error) {
-      console.error("Error loading images:", error);
-    }
-  }, [totalFrames]);
-
-  // Preload images on mount
+    // Image preloading logic
   useEffect(() => {
-    preloadImages();
-  }, [preloadImages]);
+    let isMounted = true;
+    const initialFrameCount = 80; // Number of frames to load initially
+
+    const preloadImageRange = (theme, start, end, isLazy) => {
+      const promises = [];
+      const images = [];
+      for (let i = start; i <= end; i++) {
+        const frameNumber = String(i).padStart(5, '0');
+        const img = new Image();
+        img.src = `/frames/${theme}/frame_${frameNumber}.webp`;
+        img.loading = isLazy ? 'lazy' : 'eager';
+        promises.push(
+          new Promise((resolve, reject) => {
+            img.onload = () => {
+              images[i - 1] = img; // Store in correct index
+              resolve();
+            };
+            img.onerror = reject;
+          })
+        );
+      }
+      return Promise.all(promises).then(() => images);
+    };
+
+    const loadImages = async () => {
+      const primaryTheme = isDarkMode ? 'dark' : 'light';
+      const secondaryTheme = isDarkMode ? 'light' : 'dark';
+      const primarySetter = isDarkMode ? setDarkImages : setLightImages;
+      const secondarySetter = isDarkMode ? setLightImages : setDarkImages;
+
+      // Loop 1: Eagerly load initial primary frames
+      const initialPrimaryPromises = [];
+      for (let i = 1; i <= initialFrameCount; i++) {
+        const frameNumber = String(i).padStart(5, '0');
+        const img = new Image();
+        img.src = `/frames/${primaryTheme}/frame_${frameNumber}.webp`;
+        initialPrimaryPromises.push(new Promise(resolve => {
+          img.onload = () => resolve({ img, index: i - 1 });
+          img.onerror = () => resolve({ img: null, index: i - 1 });
+        }));
+      }
+      const loadedInitialPrimary = await Promise.all(initialPrimaryPromises);
+      if (!isMounted) return;
+      primarySetter(prev => {
+        const newArr = [...prev];
+        loadedInitialPrimary.forEach(({ img, index }) => { if (img) newArr[index] = img; });
+        return newArr;
+      });
+      setImagesLoaded(true);
+
+      // Loop 2: Lazily load remaining primary frames
+      const remainingPrimaryPromises = [];
+      for (let i = initialFrameCount + 1; i <= secondFrameCount ; i++) {
+        const frameNumber = String(i).padStart(5, '0');
+        const img = new Image();
+        img.src = `/frames/${primaryTheme}/frame_${frameNumber}.webp`;
+        remainingPrimaryPromises.push(new Promise(resolve => {
+          img.onload = () => resolve({ img, index: i - 1 });
+          img.onerror = () => resolve({ img: null, index: i - 1 });
+        }));
+      }
+      
+      for (let i = secondFrameCount + 1; i <= thirdFrameCount; i++) {
+        const frameNumber = String(i).padStart(5, '0');
+        const img = new Image();
+        img.src = `/frames/${primaryTheme}/frame_${frameNumber}.webp`;
+        remainingPrimaryPromises.push(new Promise(resolve => {
+          img.onload = () => resolve({ img, index: i - 1 });
+          img.onerror = () => resolve({ img: null, index: i - 1 });
+        }));
+      }
+
+      for (let i = thirdFrameCount + 1; i <= totalFrames; i++) {
+        const frameNumber = String(i).padStart(5, '0');
+        const img = new Image();
+        img.src = `/frames/${primaryTheme}/frame_${frameNumber}.webp`;
+        remainingPrimaryPromises.push(new Promise(resolve => {
+          img.onload = () => resolve({ img, index: i - 1 });
+          img.onerror = () => resolve({ img: null, index: i - 1 });
+        }));
+      }
+
+
+      Promise.all(remainingPrimaryPromises).then(loadedRemainingPrimary => {
+        if (isMounted) {
+            primarySetter(prev => {
+                const newArr = [...prev];
+                loadedRemainingPrimary.forEach(({ img, index }) => { if (img) newArr[index] = img; });
+                return newArr;
+            });
+        }
+      });
+
+      // Loop 3: Lazily load initial secondary frames
+      const initialSecondaryPromises = [];
+      for (let i = 1; i <= initialFrameCount; i++) {
+          const frameNumber = String(i).padStart(5, '0');
+          const img = new Image();
+          img.src = `/frames/${secondaryTheme}/frame_${frameNumber}.webp`;
+          initialSecondaryPromises.push(new Promise(resolve => {
+              img.onload = () => resolve({ img, index: i - 1 });
+              img.onerror = () => resolve({ img: null, index: i - 1 });
+          }));
+      }
+      Promise.all(initialSecondaryPromises).then(loadedInitialSecondary => {
+          if (isMounted) {
+              secondarySetter(prev => {
+                  const newArr = [...prev];
+                  loadedInitialSecondary.forEach(({ img, index }) => { if (img) newArr[index] = img; });
+                  return newArr;
+              });
+          }
+      });
+
+      // Loop 4: Lazily load remaining secondary frames
+      const remainingSecondaryPromises = [];
+      for (let i = initialFrameCount + 1; i <= totalFrames; i++) {
+          const frameNumber = String(i).padStart(5, '0');
+          const img = new Image();
+          img.src = `/frames/${secondaryTheme}/frame_${frameNumber}.webp`;
+          remainingSecondaryPromises.push(new Promise(resolve => {
+              img.onload = () => resolve({ img, index: i - 1 });
+              img.onerror = () => resolve({ img: null, index: i - 1 });
+          }));
+      }
+      Promise.all(remainingSecondaryPromises).then(loadedRemainingSecondary => {
+          if (isMounted) {
+              secondarySetter(prev => {
+                  const newArr = [...prev];
+                  loadedRemainingSecondary.forEach(({ img, index }) => { if (img) newArr[index] = img; });
+                  return newArr;
+              });
+          }
+      });
+    };
+
+    loadImages();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isDarkMode, totalFrames]);
 
   // GSAP Text Animation for left and right text with smooth scroll-based fade in
   useEffect(() => {
@@ -393,12 +490,21 @@ const ScrollVideoFrames = ({isDarkMode}) => {
 
           </div>
 
-          {/* Loading indicator - only show if images aren't loaded */}
+          {/* Loading indicator - full screen */}
           {!imagesLoaded && (
-            <div className="absolute top-4 left-4 z-40">
-              <div
-                className={`animate-spin rounded-full h-6 w-6 border-b-2 ${themeValues.spinnerColor}`}
-              ></div>
+            <div
+              className="absolute inset-0 flex items-center justify-center bg-opacity-80 z-50"
+              style={{ backgroundColor: isDarkMode ? '#000' : '#FFF' }}
+            >
+              <div className="text-center">
+                <h2
+                  className={`text-4xl font-bold ${themeValues.textColor}`}>
+                  Loading...
+                </h2>
+                <p className={`mt-2 ${themeValues.textColor}`}>
+                  Please wait while we prepare the experience.
+                </p>
+              </div>
             </div>
           )}
         </div>
@@ -407,4 +513,4 @@ const ScrollVideoFrames = ({isDarkMode}) => {
   );
 };
 
-export default ScrollVideoFrames;
+export default HeaderFrame;
