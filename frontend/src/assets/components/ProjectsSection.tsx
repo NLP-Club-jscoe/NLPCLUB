@@ -1,75 +1,81 @@
 import { useState, useEffect, useRef } from 'react';
 import { Github, ExternalLink, Play, Award, Moon, Sun, Sparkles } from 'lucide-react';
 
-const ProjectsSection = () => {
+const ProjectsSection = ({isDarkMode}) => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [isDark, setIsDark] = useState(true);
+
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
 
   // Dynamic canvas background
  
   const projects = [
-    {
-      id: 1,
-      title: 'Sentiment Analysis for Social Media',
-      description: 'Real-time sentiment analysis of social media posts using transformer models with 94% accuracy.',
-      category: 'research',
-      technologies: ['Python', 'BERT', 'PyTorch', 'React'],
-      gradient: '',
-      achievements: ['Published at EMNLP 2023', 'Best Student Paper Award'],
-    },
-    {
-      id: 2,
-      title: 'Medical Document Parser',
-      description: 'AI-powered system to extract key information from medical records and reports.',
-      category: 'applications',
-      technologies: ['spaCy', 'TensorFlow', 'FastAPI', 'Vue.js'],
-      gradient: '',
-      achievements: ['Deployed in 3 hospitals', '50% time savings'],
-    },
-    {
-      id: 3,
-      title: 'Multilingual Chatbot Framework',
-      description: 'Open-source framework for building chatbots that understand 15+ languages.',
-      category: 'tools',
-      technologies: ['Transformers', 'Flask', 'Docker', 'Angular'],
-      gradient: '',
-      achievements: ['1000+ GitHub stars', 'Used by 50+ companies'],
-    },
-    {
-      id: 4,
-      title: 'Code Generation Assistant',
-      description: 'GPT-powered tool that generates code from natural language descriptions.',
-      category: 'tools',
-      technologies: ['OpenAI API', 'Node.js', 'TypeScript', 'Electron'],
-      gradient: '',
-      achievements: ['Featured on Product Hunt', '10k+ users'],
-    }
-  ];
+  {
+    id: 1,
+    title: 'Alumni Connect',
+    description:
+      'Cloud-powered platform that connects students with alumni for mentorship and growth. Features AI-based mentor matching, achievement sharing, and real-time chat.',
+    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop&crop=faces', // Added image
+    technologies: ['Next.js', 'FastAPI', 'PostgreSQL', 'LangChain', 'AWS'],
+    gradient: 'from-blue-600 to-purple-600',
+    achievements: ['Finalist in SIH 2024', 'Used by 200+ users', 'Real-time role-based chat implemented'],
+  },
+  {
+    id: 2,
+    title: 'AI Interview Agent',
+    description:
+      'Modular AI system that conducts round-wise technical interviews with voice, resume parsing, and anti-cheat monitoring. Powered by real-time STT, TTS, and RAG pipelines.',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&crop=faces', // Added image
+    technologies: ['LangChain', 'FastAPI', 'PyTorch', 'Groq API', 'React'],
+    gradient: 'from-emerald-600 to-teal-600',
+    achievements: ['Supports 5+ job roles', 'RAG-based question generation', 'Voice-based interaction prototype ready'],
+  },
+  {
+    id: 3,
+    title: 'AI Health Chain',
+    description:
+      'AI-powered platform bridging patients and hospitals using chatbots. Offers symptom-based guidance, real-time hospital connection, and post-treatment monitoring.',
+    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop&crop=center', // Added image
+    technologies: ['FastAPI', 'LangChain', 'React', 'MongoDB', 'HuggingFace'],
+    gradient: 'from-red-600 to-pink-600',
+    achievements: ['Supports 10+ symptoms', 'Secure patient-hospital chat', 'Tested with real users'],
+  },
+  {
+    id: 4,
+    title: 'Revizio AI',
+    description:
+      'AI note-enhancement tool that transforms handwritten notes into enriched study material, mind maps, and Q&A using authentic sources like YouTube and books.',
+    image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400&h=300&fit=crop&crop=center', // Added image
+    technologies: ['Python', 'LangChain', 'YouTube API', 'GPT-4', 'React'],
+    category:'',
+    gradient: 'from-amber-600 to-orange-600',
+    achievements: ['Transforms raw notes into 3 formats', 'Used by 100+ students', 'YouTube transcript integration'],
+  }
+];
+
 
   const filteredProjects = activeCategory === 'all' 
     ? projects 
     : projects.filter(project => project.category === activeCategory);
 
  const themeClasses = {
-  background: isDark ? 'bg-black' : 'bg-gray-50',
-  text: isDark ? 'text-white' : 'text-gray-900',
-  muted: isDark ? 'text-gray-400' : 'text-gray-600',
-  card: isDark 
+  background: isDarkMode ? 'bg-black' : 'bg-gray-50',
+  text: isDarkMode ? 'text-white' : 'text-gray-900',
+  muted: isDarkMode ? 'text-gray-400' : 'text-gray-600',
+  card: isDarkMode 
     ? 'bg-black/70 border-neutral-800/70' 
     : 'bg-white/70 border-gray-200/50',
-  button: isDark 
+  button: isDarkMode 
     ? 'bg-black/60 border-neutral-700 hover:bg-neutral-800/70' 
     : 'bg-white/50 border-gray-300 hover:bg-gray-100/50',
-  activeButton: isDark 
+  activeButton: isDarkMode 
     ? 'bg-gradient-to-r from-purple-600 to-pink-600' 
     : 'bg-gradient-to-r from-blue-600 to-indigo-600'
 };
 
 
   return (
-    <div className={`min-h-screen relative overflow-hidden transition-all duration-700 ${themeClasses.background} ${themeClasses.text}`}>
+    <div id='projects' className={`min-h-screen relative overflow-hidden transition-all duration-700 ${themeClasses.background} ${themeClasses.text}`}>
       {/* Dynamic Canvas Background */}
       <canvas
         ref={canvasRef}
@@ -109,30 +115,34 @@ const ProjectsSection = () => {
                     animation: 'fadeInUp 0.8s ease-out forwards'
                   }}
                 >
-                  {/* Gradient Header */}
-                  <div className={`relative h-48 bg-gradient-to-br ${project.gradient} overflow-hidden`}>
+                  {/* Image/Gradient Header */}
+                  <div className={`relative h-48 overflow-hidden ${project.image ? '' : `bg-gradient-to-br ${project.gradient}`}`}>
+                    {project.image ? (
+                      <>
+                        {/* Project Image */}
+                        <img 
+                          src={project.image} 
+                          alt={project.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        {/* Overlay gradient for better text readability */}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-60`}></div>
+                      </>
+                    ) : null}
+                    
                     {/* Floating Shapes */}
                     <div className="absolute top-4 right-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
                     <div className="absolute bottom-4 left-4 w-16 h-16 bg-white/20 rounded-full blur-lg"></div>
                     
-                    {/* Play Button Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <button className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:scale-110 transition-transform border border-white/30">
-                        <Play className="w-10 h-10 text-white ml-1" />
-                      </button>
-                    </div>
-
-                    {/* Category Badge */}
-                    <div className="absolute top-6 left-6">
-                      <span className="px-4 py-2 bg-white/20 backdrop-blur-sm text-white text-sm font-semibold rounded-full border border-white/30">
-                        {project.category}
-                      </span>
+                    {/* Project Icon/Logo area - optional */}
+                    <div className="absolute top-4 left-4">
+                      
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className="p-8">
-                    <h3 className="text-2xl font-bold mb-4 bg-black">
+                    <h3 className="text-2xl font-bold mb-4">
                       {project.title}
                     </h3>
                     <p className={`${themeClasses.muted} mb-6 leading-relaxed text-lg`}>
@@ -145,7 +155,7 @@ const ProjectsSection = () => {
                         <span 
                           key={tech}
                           className={`px-3 py-1 rounded-lg text-sm font-medium backdrop-blur-sm border ${
-                            isDark ? 'bg-gray-700/50 border-gray-600 text-gray-300' : 'bg-gray-100/70 border-gray-300 text-gray-700'
+                            isDarkMode ? 'bg-gray-700/50 border-gray-600 text-gray-300' : 'bg-gray-100/70 border-gray-300 text-gray-700'
                           }`}
                         >
                           {tech}

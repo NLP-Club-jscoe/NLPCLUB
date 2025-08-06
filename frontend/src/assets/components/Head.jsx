@@ -1,11 +1,11 @@
 import React from 'react'
 import HeaderFrame from '../components/HeaderFrame'
 
-const Head = () => {
+const Head = ({isDarkMode}) => {
   return (
-    <div>
+    <div id='home'>
        
-         <HeaderFrame/>
+         <HeaderFrame isDarkMode={isDarkMode}/>
     </div>
   )
 }
