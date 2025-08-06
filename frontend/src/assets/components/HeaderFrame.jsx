@@ -1,7 +1,6 @@
-
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 
-const HeaderFrame = ({isDarkMode}) => {
+const HeaderFrame = ({ isDarkMode, onLoadingChange }) => {
   const [currentFrame, setCurrentFrame] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [imageOpacity, setImageOpacity] = useState(0);
@@ -12,17 +11,25 @@ const HeaderFrame = ({isDarkMode}) => {
   const totalFrames = 140;
   const secondFrameCount = 100;
   const thirdFrameCount = 120;
-  const criticalFrameCount = 20; // Define criticalFrameCount here
+  const criticalFrameCount = 20;
   const currentFrameRef = useRef({ current: 0 });
 
-  // Enhanced loading states
+  // Enhanced loading states - NO LOADER UI HERE
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingStage, setLoadingStage] = useState('Initializing...');
   const [darkImages, setDarkImages] = useState(Array(totalFrames).fill(null));
   const [lightImages, setLightImages] = useState(Array(totalFrames).fill(null));
   const [criticalFramesLoaded, setCriticalFramesLoaded] = useState(false);
-  const [titlesVisible, setTitlesVisible] = useState(true);
+
+  // Notify parent component of loading changes
+  useEffect(() => {
+    onLoadingChange?.({
+      isLoaded: imagesLoaded,
+      progress: loadingProgress,
+      stage: loadingStage
+    });
+  }, [imagesLoaded, loadingProgress, loadingStage, onLoadingChange]);
 
   // Text content for different frames/themes
   const textContent = useMemo(
@@ -43,13 +50,12 @@ const HeaderFrame = ({isDarkMode}) => {
     []
   );
 
-  // Get current text based on theme
   const currentText = isDarkMode ? textContent.dark : textContent.light;
 
   // Enhanced image preloading with better progress tracking
   useEffect(() => {
     let isMounted = true;
-    const initialFrameCount = 40; // Reduced for faster initial load
+    const initialFrameCount = 40;
     
     let totalExpectedLoads = 0;
     let currentLoads = 0;
@@ -63,7 +69,6 @@ const HeaderFrame = ({isDarkMode}) => {
 
     const preloadImageBatch = async (theme, startFrame, endFrame, isEager = false) => {
       const promises = [];
-      const batchSize = endFrame - startFrame + 1;
       
       for (let i = startFrame; i <= endFrame; i++) {
         const frameNumber = String(i).padStart(5, '0');
@@ -104,11 +109,9 @@ const HeaderFrame = ({isDarkMode}) => {
       const primarySetter = isDarkMode ? setDarkImages : setLightImages;
       const secondarySetter = isDarkMode ? setLightImages : setDarkImages;
 
-      // Calculate total loads for progress
-      totalExpectedLoads = totalFrames * 2; // Both themes
+      totalExpectedLoads = totalFrames * 2;
       
       try {
-        // Stage 1: Load critical frames first (frames 1-20) - EAGER
         setLoadingStage('Loading critical frames...');
         const criticalFrames = await preloadImageBatch(primaryTheme, 1, criticalFrameCount, true);
         
@@ -124,7 +127,6 @@ const HeaderFrame = ({isDarkMode}) => {
         
         setCriticalFramesLoaded(true);
         
-        // Stage 2: Load initial essential frames (21-40)
         setLoadingStage('Loading essential frames...');
         const initialFrames = await preloadImageBatch(primaryTheme, criticalFrameCount + 1, initialFrameCount);
         
@@ -140,11 +142,10 @@ const HeaderFrame = ({isDarkMode}) => {
         
         setImagesLoaded(true);
         
-        // Stage 3: Background load remaining primary frames in chunks
+        // Background load remaining frames
         const loadRemainingFrames = async () => {
           const chunkSize = 20;
           
-          // Load frames 41-100
           for (let start = initialFrameCount + 1; start <= secondFrameCount; start += chunkSize) {
             if (!isMounted) return;
             const end = Math.min(start + chunkSize - 1, secondFrameCount);
@@ -160,11 +161,9 @@ const HeaderFrame = ({isDarkMode}) => {
               });
             }
             
-            // Small delay to prevent blocking
             await new Promise(resolve => setTimeout(resolve, 50));
           }
           
-          // Load frames 101-120
           for (let start = secondFrameCount + 1; start <= thirdFrameCount; start += chunkSize) {
             if (!isMounted) return;
             const end = Math.min(start + chunkSize - 1, thirdFrameCount);
@@ -183,7 +182,6 @@ const HeaderFrame = ({isDarkMode}) => {
             await new Promise(resolve => setTimeout(resolve, 50));
           }
           
-          // Load frames 121-140
           for (let start = thirdFrameCount + 1; start <= totalFrames; start += chunkSize) {
             if (!isMounted) return;
             const end = Math.min(start + chunkSize - 1, totalFrames);
@@ -203,7 +201,6 @@ const HeaderFrame = ({isDarkMode}) => {
           }
         };
         
-        // Stage 4: Load secondary theme in background (lower priority)
         const loadSecondaryTheme = async () => {
           const chunkSize = 30;
           
@@ -226,7 +223,6 @@ const HeaderFrame = ({isDarkMode}) => {
           }
         };
         
-        // Run remaining loads in parallel
         Promise.all([loadRemainingFrames(), loadSecondaryTheme()]).then(() => {
           if (isMounted) {
             setLoadingProgress(100);
@@ -249,7 +245,7 @@ const HeaderFrame = ({isDarkMode}) => {
     };
   }, [isDarkMode, totalFrames, criticalFrameCount]);
 
-  // GSAP Text Animation for left and right text with smooth scroll-based fade in
+  // GSAP Text Animation for left and right text
   useEffect(() => {
     if (!leftTextRef.current || !rightTextRef.current) return;
 
@@ -302,7 +298,7 @@ const HeaderFrame = ({isDarkMode}) => {
     return () => window.removeEventListener("scroll", throttledHandler);
   }, []);
 
-  // Optimized scroll handler with throttling and image reveal logic
+  // Optimized scroll handler
   const handleScroll = useCallback(() => {
     if (!containerRef.current) return;
 
@@ -337,7 +333,6 @@ const HeaderFrame = ({isDarkMode}) => {
     }
   }, [criticalFramesLoaded, totalFrames]);
 
-  // Add scroll event listener with RAF throttling
   useEffect(() => {
     let ticking = false;
     const throttledScrollHandler = () => {
@@ -366,7 +361,7 @@ const HeaderFrame = ({isDarkMode}) => {
     spinnerColor: isDarkMode ? "border-white" : "border-black",
   }), [isDarkMode, darkImages, lightImages]);
 
-  // Memoized text animation calculations for title elements only
+  // Memoized text animation calculations
   const textAnimations = useMemo(() => {
     const titleScale = 1 + scrollProgress * 0.1;
     const titleOpacity = Math.max(0.3, 1 - scrollProgress * 0.5);
@@ -384,58 +379,7 @@ const HeaderFrame = ({isDarkMode}) => {
         {/* Sticky container for the image */}
         <div className={`sticky top-0 w-full h-screen ${themeValues.heroBgColor}`}>
           
-          {/* Enhanced Loading Screen */}
-          {!imagesLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center z-50"
-                 style={{ backgroundColor: isDarkMode ? '#000' : '#FFF' }}>
-              <div className="text-center max-w-md mx-auto px-6">
-                
-                {/* Animated Logo */}
-                <div className="relative mb-8">
-                  <div className={`w-24 h-24 mx-auto rounded-full border-4 border-t-transparent animate-spin ${
-                    isDarkMode ? 'border-white/20' : 'border-gray-200'
-                  }`}></div>
-                  <div className={`absolute inset-0 w-24 h-24 mx-auto rounded-full border-4 border-transparent border-t-current animate-spin ${
-                    isDarkMode ? 'text-blue-400' : 'text-blue-600'
-                  }`} style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
-                </div>
-
-                {/* Loading Text */}
-                <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${themeValues.textColor}`}
-                    style={{ fontFamily: "StencilFont" }}>
-                  {currentText.mainTitle} {currentText.mainSubtitle}
-                </h2>
-                
-                {/* Progress Bar */}
-                <div className={`w-full bg-opacity-20 rounded-full h-3 mb-4 ${
-                  isDarkMode ? 'bg-white' : 'bg-gray-300'
-                }`}>
-                  <div 
-                    className={`h-3 rounded-full transition-all duration-300 ${
-                      isDarkMode 
-                        ? 'bg-gradient-to-r from-blue-400 to-purple-400' 
-                        : 'bg-gradient-to-r from-blue-500 to-purple-500'
-                    }`}
-                    style={{ width: `${loadingProgress}%` }}
-                  ></div>
-                </div>
-                
-                {/* Loading Stage and Progress */}
-                <p className={`text-lg font-medium mb-2 ${themeValues.textColor}`}>
-                  {loadingStage}
-                </p>
-                <p className={`text-sm opacity-70 ${themeValues.textColor}`}>
-                  {loadingProgress}% • Preparing 140 frames for smooth animation
-                </p>
-
-                {/* Loading Tips */}
-                <div className={`mt-6 text-xs opacity-60 ${themeValues.textColor}`}>
-                  <p>💡 First-time loading may take a moment</p>
-                  <p>🎯 Critical frames load first for immediate interaction</p>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* NO LOADER HERE - Removed completely */}
 
           {/* Video frames - Show as soon as critical frames are loaded */}
           {criticalFramesLoaded && (
