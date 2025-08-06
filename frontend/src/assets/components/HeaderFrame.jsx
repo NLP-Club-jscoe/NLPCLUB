@@ -1,24 +1,28 @@
+
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 
 const HeaderFrame = ({isDarkMode}) => {
   const [currentFrame, setCurrentFrame] = useState(0);
-
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [imageOpacity, setImageOpacity] = useState(0); // New state for image opacity
-  const [textZIndex, setTextZIndex] = useState(30); // New state for text z-index
+  const [imageOpacity, setImageOpacity] = useState(0);
+  const [textZIndex, setTextZIndex] = useState(30);
   const containerRef = useRef(null);
   const leftTextRef = useRef(null);
   const rightTextRef = useRef(null);
   const totalFrames = 140;
   const secondFrameCount = 100;
   const thirdFrameCount = 120;
+  const criticalFrameCount = 20; // Define criticalFrameCount here
   const currentFrameRef = useRef({ current: 0 });
 
-  // Preload images for both themes
+  // Enhanced loading states
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingStage, setLoadingStage] = useState('Initializing...');
   const [darkImages, setDarkImages] = useState(Array(totalFrames).fill(null));
   const [lightImages, setLightImages] = useState(Array(totalFrames).fill(null));
-  const [titlesVisible, setTitlesVisible] = useState(true); // Start with titles visible
+  const [criticalFramesLoaded, setCriticalFramesLoaded] = useState(false);
+  const [titlesVisible, setTitlesVisible] = useState(true);
 
   // Text content for different frames/themes
   const textContent = useMemo(
@@ -42,142 +46,200 @@ const HeaderFrame = ({isDarkMode}) => {
   // Get current text based on theme
   const currentText = isDarkMode ? textContent.dark : textContent.light;
 
-    // Image preloading logic
+  // Enhanced image preloading with better progress tracking
   useEffect(() => {
     let isMounted = true;
-    const initialFrameCount = 80; // Number of frames to load initially
+    const initialFrameCount = 40; // Reduced for faster initial load
+    
+    let totalExpectedLoads = 0;
+    let currentLoads = 0;
 
-    const preloadImageRange = (theme, start, end, isLazy) => {
+    const updateProgress = (stage, loaded, total) => {
+      if (!isMounted) return;
+      const progress = Math.round((loaded / total) * 100);
+      setLoadingProgress(progress);
+      setLoadingStage(stage);
+    };
+
+    const preloadImageBatch = async (theme, startFrame, endFrame, isEager = false) => {
       const promises = [];
-      const images = [];
-      for (let i = start; i <= end; i++) {
+      const batchSize = endFrame - startFrame + 1;
+      
+      for (let i = startFrame; i <= endFrame; i++) {
         const frameNumber = String(i).padStart(5, '0');
         const img = new Image();
         img.src = `/frames/${theme}/frame_${frameNumber}.webp`;
-        img.loading = isLazy ? 'lazy' : 'eager';
-        promises.push(
-          new Promise((resolve, reject) => {
-            img.onload = () => {
-              images[i - 1] = img; // Store in correct index
-              resolve();
-            };
-            img.onerror = reject;
-          })
-        );
+        
+        if (isEager) {
+          img.loading = 'eager';
+          img.fetchPriority = 'high';
+        }
+        
+        promises.push(new Promise(resolve => {
+          const handleLoad = () => {
+            currentLoads++;
+            updateProgress(`Loading ${theme} frames...`, currentLoads, totalExpectedLoads);
+            resolve({ img, index: i - 1 });
+          };
+          
+          const handleError = () => {
+            currentLoads++;
+            updateProgress(`Loading ${theme} frames...`, currentLoads, totalExpectedLoads);
+            resolve({ img: null, index: i - 1 });
+          };
+          
+          img.onload = handleLoad;
+          img.onerror = handleError;
+        }));
       }
-      return Promise.all(promises).then(() => images);
+      
+      return Promise.all(promises);
     };
 
     const loadImages = async () => {
+      if (!isMounted) return;
+      
       const primaryTheme = isDarkMode ? 'dark' : 'light';
       const secondaryTheme = isDarkMode ? 'light' : 'dark';
       const primarySetter = isDarkMode ? setDarkImages : setLightImages;
       const secondarySetter = isDarkMode ? setLightImages : setDarkImages;
 
-      // Loop 1: Eagerly load initial primary frames
-      const initialPrimaryPromises = [];
-      for (let i = 1; i <= initialFrameCount; i++) {
-        const frameNumber = String(i).padStart(5, '0');
-        const img = new Image();
-        img.src = `/frames/${primaryTheme}/frame_${frameNumber}.webp`;
-        initialPrimaryPromises.push(new Promise(resolve => {
-          img.onload = () => resolve({ img, index: i - 1 });
-          img.onerror = () => resolve({ img: null, index: i - 1 });
-        }));
-      }
-      const loadedInitialPrimary = await Promise.all(initialPrimaryPromises);
-      if (!isMounted) return;
-      primarySetter(prev => {
-        const newArr = [...prev];
-        loadedInitialPrimary.forEach(({ img, index }) => { if (img) newArr[index] = img; });
-        return newArr;
-      });
-      setImagesLoaded(true);
-
-      // Loop 2: Lazily load remaining primary frames
-      const remainingPrimaryPromises = [];
-      for (let i = initialFrameCount + 1; i <= secondFrameCount ; i++) {
-        const frameNumber = String(i).padStart(5, '0');
-        const img = new Image();
-        img.src = `/frames/${primaryTheme}/frame_${frameNumber}.webp`;
-        remainingPrimaryPromises.push(new Promise(resolve => {
-          img.onload = () => resolve({ img, index: i - 1 });
-          img.onerror = () => resolve({ img: null, index: i - 1 });
-        }));
-      }
+      // Calculate total loads for progress
+      totalExpectedLoads = totalFrames * 2; // Both themes
       
-      for (let i = secondFrameCount + 1; i <= thirdFrameCount; i++) {
-        const frameNumber = String(i).padStart(5, '0');
-        const img = new Image();
-        img.src = `/frames/${primaryTheme}/frame_${frameNumber}.webp`;
-        remainingPrimaryPromises.push(new Promise(resolve => {
-          img.onload = () => resolve({ img, index: i - 1 });
-          img.onerror = () => resolve({ img: null, index: i - 1 });
-        }));
-      }
-
-      for (let i = thirdFrameCount + 1; i <= totalFrames; i++) {
-        const frameNumber = String(i).padStart(5, '0');
-        const img = new Image();
-        img.src = `/frames/${primaryTheme}/frame_${frameNumber}.webp`;
-        remainingPrimaryPromises.push(new Promise(resolve => {
-          img.onload = () => resolve({ img, index: i - 1 });
-          img.onerror = () => resolve({ img: null, index: i - 1 });
-        }));
-      }
-
-
-      Promise.all(remainingPrimaryPromises).then(loadedRemainingPrimary => {
-        if (isMounted) {
-            primarySetter(prev => {
+      try {
+        // Stage 1: Load critical frames first (frames 1-20) - EAGER
+        setLoadingStage('Loading critical frames...');
+        const criticalFrames = await preloadImageBatch(primaryTheme, 1, criticalFrameCount, true);
+        
+        if (!isMounted) return;
+        
+        primarySetter(prev => {
+          const newArr = [...prev];
+          criticalFrames.forEach(({ img, index }) => { 
+            if (img) newArr[index] = img; 
+          });
+          return newArr;
+        });
+        
+        setCriticalFramesLoaded(true);
+        
+        // Stage 2: Load initial essential frames (21-40)
+        setLoadingStage('Loading essential frames...');
+        const initialFrames = await preloadImageBatch(primaryTheme, criticalFrameCount + 1, initialFrameCount);
+        
+        if (!isMounted) return;
+        
+        primarySetter(prev => {
+          const newArr = [...prev];
+          initialFrames.forEach(({ img, index }) => { 
+            if (img) newArr[index] = img; 
+          });
+          return newArr;
+        });
+        
+        setImagesLoaded(true);
+        
+        // Stage 3: Background load remaining primary frames in chunks
+        const loadRemainingFrames = async () => {
+          const chunkSize = 20;
+          
+          // Load frames 41-100
+          for (let start = initialFrameCount + 1; start <= secondFrameCount; start += chunkSize) {
+            if (!isMounted) return;
+            const end = Math.min(start + chunkSize - 1, secondFrameCount);
+            const chunk = await preloadImageBatch(primaryTheme, start, end);
+            
+            if (isMounted) {
+              primarySetter(prev => {
                 const newArr = [...prev];
-                loadedRemainingPrimary.forEach(({ img, index }) => { if (img) newArr[index] = img; });
+                chunk.forEach(({ img, index }) => { 
+                  if (img) newArr[index] = img; 
+                });
                 return newArr;
-            });
+              });
+            }
+            
+            // Small delay to prevent blocking
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+          
+          // Load frames 101-120
+          for (let start = secondFrameCount + 1; start <= thirdFrameCount; start += chunkSize) {
+            if (!isMounted) return;
+            const end = Math.min(start + chunkSize - 1, thirdFrameCount);
+            const chunk = await preloadImageBatch(primaryTheme, start, end);
+            
+            if (isMounted) {
+              primarySetter(prev => {
+                const newArr = [...prev];
+                chunk.forEach(({ img, index }) => { 
+                  if (img) newArr[index] = img; 
+                });
+                return newArr;
+              });
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+          
+          // Load frames 121-140
+          for (let start = thirdFrameCount + 1; start <= totalFrames; start += chunkSize) {
+            if (!isMounted) return;
+            const end = Math.min(start + chunkSize - 1, totalFrames);
+            const chunk = await preloadImageBatch(primaryTheme, start, end);
+            
+            if (isMounted) {
+              primarySetter(prev => {
+                const newArr = [...prev];
+                chunk.forEach(({ img, index }) => { 
+                  if (img) newArr[index] = img; 
+                });
+                return newArr;
+              });
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        };
+        
+        // Stage 4: Load secondary theme in background (lower priority)
+        const loadSecondaryTheme = async () => {
+          const chunkSize = 30;
+          
+          for (let start = 1; start <= totalFrames; start += chunkSize) {
+            if (!isMounted) return;
+            const end = Math.min(start + chunkSize - 1, totalFrames);
+            const chunk = await preloadImageBatch(secondaryTheme, start, end);
+            
+            if (isMounted) {
+              secondarySetter(prev => {
+                const newArr = [...prev];
+                chunk.forEach(({ img, index }) => { 
+                  if (img) newArr[index] = img; 
+                });
+                return newArr;
+              });
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        };
+        
+        // Run remaining loads in parallel
+        Promise.all([loadRemainingFrames(), loadSecondaryTheme()]).then(() => {
+          if (isMounted) {
+            setLoadingProgress(100);
+            setLoadingStage('Complete!');
+          }
+        });
+        
+      } catch (error) {
+        console.error('Error loading images:', error);
+        if (isMounted) {
+          setLoadingStage('Error loading images');
         }
-      });
-
-      // Loop 3: Lazily load initial secondary frames
-      const initialSecondaryPromises = [];
-      for (let i = 1; i <= initialFrameCount; i++) {
-          const frameNumber = String(i).padStart(5, '0');
-          const img = new Image();
-          img.src = `/frames/${secondaryTheme}/frame_${frameNumber}.webp`;
-          initialSecondaryPromises.push(new Promise(resolve => {
-              img.onload = () => resolve({ img, index: i - 1 });
-              img.onerror = () => resolve({ img: null, index: i - 1 });
-          }));
       }
-      Promise.all(initialSecondaryPromises).then(loadedInitialSecondary => {
-          if (isMounted) {
-              secondarySetter(prev => {
-                  const newArr = [...prev];
-                  loadedInitialSecondary.forEach(({ img, index }) => { if (img) newArr[index] = img; });
-                  return newArr;
-              });
-          }
-      });
-
-      // Loop 4: Lazily load remaining secondary frames
-      const remainingSecondaryPromises = [];
-      for (let i = initialFrameCount + 1; i <= totalFrames; i++) {
-          const frameNumber = String(i).padStart(5, '0');
-          const img = new Image();
-          img.src = `/frames/${secondaryTheme}/frame_${frameNumber}.webp`;
-          remainingSecondaryPromises.push(new Promise(resolve => {
-              img.onload = () => resolve({ img, index: i - 1 });
-              img.onerror = () => resolve({ img: null, index: i - 1 });
-          }));
-      }
-      Promise.all(remainingSecondaryPromises).then(loadedRemainingSecondary => {
-          if (isMounted) {
-              secondarySetter(prev => {
-                  const newArr = [...prev];
-                  loadedRemainingSecondary.forEach(({ img, index }) => { if (img) newArr[index] = img; });
-                  return newArr;
-              });
-          }
-      });
     };
 
     loadImages();
@@ -185,7 +247,7 @@ const HeaderFrame = ({isDarkMode}) => {
     return () => {
       isMounted = false;
     };
-  }, [isDarkMode, totalFrames]);
+  }, [isDarkMode, totalFrames, criticalFrameCount]);
 
   // GSAP Text Animation for left and right text with smooth scroll-based fade in
   useEffect(() => {
@@ -197,28 +259,20 @@ const HeaderFrame = ({isDarkMode}) => {
       const container = containerRef.current;
       const containerTop = container.offsetTop;
       const containerHeight = container.offsetHeight;
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       const windowHeight = window.innerHeight;
 
-      // Calculate scroll progress through the container
       const scrollStart = containerTop - windowHeight;
-      const scrollEnd = containerTop + containerHeight * 0.15; // Earlier animation
+      const scrollEnd = containerTop + containerHeight * 0.15;
       const scrollDistance = scrollEnd - scrollStart;
       const currentScroll = scrollTop - scrollStart;
-
-      // Calculate progress (0 to 1)
       const progress = Math.max(0, Math.min(1, currentScroll / scrollDistance));
 
-      // Left text: Slide from left (-100px to 0px)
       const leftTranslateX = -100 + progress * 100;
       const leftOpacity = progress;
-
-      // Right text: Slide from right (100px to 0px)
       const rightTranslateX = 100 - progress * 100;
       const rightOpacity = progress;
 
-      // Apply smooth transitions
       if (leftTextRef.current) {
         leftTextRef.current.style.transform = `translateX(${leftTranslateX}px)`;
         leftTextRef.current.style.opacity = leftOpacity;
@@ -232,10 +286,7 @@ const HeaderFrame = ({isDarkMode}) => {
       }
     };
 
-    // Initial call
     handleTextAnimation();
-
-    // Use throttled scroll listener
     let ticking = false;
     const throttledHandler = () => {
       if (!ticking) {
@@ -248,10 +299,7 @@ const HeaderFrame = ({isDarkMode}) => {
     };
 
     window.addEventListener("scroll", throttledHandler, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", throttledHandler);
-    };
+    return () => window.removeEventListener("scroll", throttledHandler);
   }, []);
 
   // Optimized scroll handler with throttling and image reveal logic
@@ -261,49 +309,37 @@ const HeaderFrame = ({isDarkMode}) => {
     const container = containerRef.current;
     const containerHeight = container.offsetHeight;
     const windowHeight = window.innerHeight;
-
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const containerTop = container.offsetTop;
     const scrollableDistance = containerHeight - windowHeight;
-
     const relativeScroll = scrollTop - containerTop;
-    const rawProgress = Math.max(
-      0,
-      Math.min(1, relativeScroll / scrollableDistance)
-    );
+    const rawProgress = Math.max(0, Math.min(1, relativeScroll / scrollableDistance));
 
     setScrollProgress(rawProgress);
 
-    // Image reveal logic - images start appearing after 20% scroll
-    const imageRevealThreshold = 0.05; 
+    const imageRevealThreshold = 0.05;
     const imageProgress = Math.max(0, (rawProgress - imageRevealThreshold) / (1 - imageRevealThreshold));
-    const newImageOpacity = Math.min(1, imageProgress * 2); // Fade in images
+    const newImageOpacity = Math.min(1, imageProgress * 2);
     setImageOpacity(newImageOpacity);
 
-    // Text z-index management - text goes behind when images are visible
     if (newImageOpacity > 0.3) {
-      setTextZIndex(10); // Behind images
+      setTextZIndex(10);
     } else {
-      setTextZIndex(30); // In front of images
+      setTextZIndex(30);
     }
 
-    // Frame calculation for when images are visible
-    if (imagesLoaded && rawProgress > imageRevealThreshold) {
+    if (criticalFramesLoaded && rawProgress > imageRevealThreshold) {
       const frameProgress = (rawProgress - imageRevealThreshold) / (1 - imageRevealThreshold);
       const targetFrame = frameProgress * (totalFrames - 1);
-      const currentTargetFrame = Math.max(
-        0,
-        Math.min(totalFrames - 1, Math.round(targetFrame))
-      );
+      const currentTargetFrame = Math.max(0, Math.min(totalFrames - 1, Math.round(targetFrame)));
       currentFrameRef.current.current = currentTargetFrame;
       setCurrentFrame(currentTargetFrame);
     }
-  }, [imagesLoaded, totalFrames]);
+  }, [criticalFramesLoaded, totalFrames]);
 
   // Add scroll event listener with RAF throttling
   useEffect(() => {
     let ticking = false;
-
     const throttledScrollHandler = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
@@ -314,50 +350,31 @@ const HeaderFrame = ({isDarkMode}) => {
       }
     };
 
-    window.addEventListener("scroll", throttledScrollHandler, {
-      passive: true,
-    });
+    window.addEventListener("scroll", throttledScrollHandler, { passive: true });
     handleScroll();
-
     return () => window.removeEventListener("scroll", throttledScrollHandler);
   }, [handleScroll]);
 
-  // Toggle theme function
-  const toggleTheme = useCallback(() => {
-    setIsDarkMode((prev) => !prev);
-  }, []);
-
   // Memoized theme values
-  const themeValues = useMemo(
-    () => ({
-      currentImages: isDarkMode ? darkImages : lightImages,
-      heroBgColor: isDarkMode ? "bg-black" : "bg-white",
-      textColor: isDarkMode ? "text-white" : "text-black",
-      buttonBg: isDarkMode
-        ? "bg-white text-black hover:bg-gray-100"
-        : "bg-black text-white hover:bg-gray-800",
-      spinnerColor: isDarkMode ? "border-white" : "border-black",
-    }),
-    [isDarkMode, darkImages, lightImages]
-  );
+  const themeValues = useMemo(() => ({
+    currentImages: isDarkMode ? darkImages : lightImages,
+    heroBgColor: isDarkMode ? "bg-black" : "bg-white",
+    textColor: isDarkMode ? "text-white" : "text-black",
+    buttonBg: isDarkMode
+      ? "bg-white text-black hover:bg-gray-100"
+      : "bg-black text-white hover:bg-gray-800",
+    spinnerColor: isDarkMode ? "border-white" : "border-black",
+  }), [isDarkMode, darkImages, lightImages]);
 
   // Memoized text animation calculations for title elements only
   const textAnimations = useMemo(() => {
-    // Main title animation based on scroll progress
     const titleScale = 1 + scrollProgress * 0.1;
-    const titleOpacity = Math.max(0.3, 1 - scrollProgress * 0.5); // Fade out more as images appear
-
-    return {
-      titleScale,
-      titleOpacity,
-    };
+    const titleOpacity = Math.max(0.3, 1 - scrollProgress * 0.5);
+    return { titleScale, titleOpacity };
   }, [scrollProgress]);
 
   return (
     <div className={`w-full transition-colors duration-300`}>
-      {/* Theme Toggle Button - Fixed Position */}
-    
-
       {/* Main scroll video container */}
       <div
         ref={containerRef}
@@ -365,11 +382,63 @@ const HeaderFrame = ({isDarkMode}) => {
         style={{ height: "500vh" }}
       >
         {/* Sticky container for the image */}
-        <div
-          className={`sticky top-0 w-full h-screen ${themeValues.heroBgColor}`}
-        >
-          {/* Video frames - Only show when images should be visible */}
-          {imagesLoaded && (
+        <div className={`sticky top-0 w-full h-screen ${themeValues.heroBgColor}`}>
+          
+          {/* Enhanced Loading Screen */}
+          {!imagesLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center z-50"
+                 style={{ backgroundColor: isDarkMode ? '#000' : '#FFF' }}>
+              <div className="text-center max-w-md mx-auto px-6">
+                
+                {/* Animated Logo */}
+                <div className="relative mb-8">
+                  <div className={`w-24 h-24 mx-auto rounded-full border-4 border-t-transparent animate-spin ${
+                    isDarkMode ? 'border-white/20' : 'border-gray-200'
+                  }`}></div>
+                  <div className={`absolute inset-0 w-24 h-24 mx-auto rounded-full border-4 border-transparent border-t-current animate-spin ${
+                    isDarkMode ? 'text-blue-400' : 'text-blue-600'
+                  }`} style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+                </div>
+
+                {/* Loading Text */}
+                <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${themeValues.textColor}`}
+                    style={{ fontFamily: "StencilFont" }}>
+                  {currentText.mainTitle} {currentText.mainSubtitle}
+                </h2>
+                
+                {/* Progress Bar */}
+                <div className={`w-full bg-opacity-20 rounded-full h-3 mb-4 ${
+                  isDarkMode ? 'bg-white' : 'bg-gray-300'
+                }`}>
+                  <div 
+                    className={`h-3 rounded-full transition-all duration-300 ${
+                      isDarkMode 
+                        ? 'bg-gradient-to-r from-blue-400 to-purple-400' 
+                        : 'bg-gradient-to-r from-blue-500 to-purple-500'
+                    }`}
+                    style={{ width: `${loadingProgress}%` }}
+                  ></div>
+                </div>
+                
+                {/* Loading Stage and Progress */}
+                <p className={`text-lg font-medium mb-2 ${themeValues.textColor}`}>
+                  {loadingStage}
+                </p>
+                <p className={`text-sm opacity-70 ${themeValues.textColor}`}>
+                  {loadingProgress}% • Preparing 140 frames for smooth animation
+                </p>
+
+                {/* Loading Tips */}
+                <div className={`mt-6 text-xs opacity-60 ${themeValues.textColor}`}>
+                  <p>💡 First-time loading may take a moment</p>
+                  <p>🎯 Critical frames load first for immediate interaction</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Video frames - Show as soon as critical frames are loaded */}
+          {criticalFramesLoaded && (
             <div 
               className="w-full h-full flex relative z-20"
               style={{ 
@@ -378,21 +447,24 @@ const HeaderFrame = ({isDarkMode}) => {
               }}
             >
               <div className="w-2/4 m-auto h-full justify-center relative mt-8 md:mt-12">
-                <img
-                  src={themeValues.currentImages[currentFrame]?.src}
-                  alt=""
-                  className="w-full h-full object-cover"
-                  style={{
-                    willChange: "transform",
-                    transform: "translateZ(0)",
-                    imageRendering: "high-quality",
-                  }}
-                />
+                {themeValues.currentImages[currentFrame] && (
+                  <img
+                    src={themeValues.currentImages[currentFrame].src}
+                    alt={`Frame ${currentFrame + 1}`}
+                    className="w-full h-full object-cover"
+                    style={{
+                      willChange: "transform",
+                      transform: "translateZ(0)",
+                      imageRendering: "high-quality",
+                    }}
+                    loading="eager"
+                  />
+                )}
               </div>
             </div>
           )}
 
-          {/* Left Side Text - Now positioned at TOP */}
+          {/* Left Side Text */}
           <div
             ref={leftTextRef}
             className="absolute left-8 md:left-16 top-24 md:top-24 pointer-events-none max-w-xs"
@@ -403,14 +475,12 @@ const HeaderFrame = ({isDarkMode}) => {
               transition: 'z-index 0.3s ease-out'
             }}
           >
-            <h2
-              className={`text-2xl md:text-3xl lg:text-4xl font-black leading-tight ${themeValues.textColor} tracking-wide`}
-            >
+            <h2 className={`text-2xl md:text-3xl lg:text-4xl font-black leading-tight ${themeValues.textColor} tracking-wide`}>
               {currentText.leftText}
             </h2>
           </div>
 
-          {/* Right Side Text - Now positioned at BOTTOM */}
+          {/* Right Side Text */}
           <div
             ref={rightTextRef}
             className="absolute right-8 md:right-16 bottom-20 md:bottom-24 pointer-events-none max-w-xs text-right"
@@ -421,14 +491,12 @@ const HeaderFrame = ({isDarkMode}) => {
               transition: 'z-index 0.3s ease-out'
             }}
           >
-            <h2
-              className={`text-2xl md:text-3xl lg:text-4xl font-black leading-tight ${themeValues.textColor} tracking-wide`}
-            >
+            <h2 className={`text-2xl md:text-3xl lg:text-4xl font-black leading-tight ${themeValues.textColor} tracking-wide`}>
               {currentText.rightText}
             </h2>
           </div>
 
-          {/* Main Title - Top - MADE BIGGER AND BOLDER */}
+          {/* Main Title */}
           <div
             className="absolute top-12 md:top-16 left-2/4 pointer-events-none"
             style={{
@@ -440,26 +508,25 @@ const HeaderFrame = ({isDarkMode}) => {
             }}
           >
             <h1
-  className={`text-8xl md:text-[12rem] lg:text-[14rem] xl:text-[16rem] font-black tracking-widest text-center ${
-    isDarkMode
-      ? "bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
-      : ""
-  }`}
-  style={{
-    color: isDarkMode ? undefined : "#454547",
-    fontWeight: 900,
-    textShadow: isDarkMode
-      ? "0 0 20px rgba(255,255,255,0.3)"
-      : "0 0 10px rgba(0,0,0,0.05)",
-    letterSpacing: "0.2em",
-  }}
->
-  {currentText.mainTitle}
-</h1>
-
+              className={`text-8xl md:text-[12rem] lg:text-[14rem] xl:text-[16rem] font-black tracking-widest text-center ${
+                isDarkMode
+                  ? "bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+                  : ""
+              }`}
+              style={{
+                color: isDarkMode ? undefined : "#454547",
+                fontWeight: 900,
+                textShadow: isDarkMode
+                  ? "0 0 20px rgba(255,255,255,0.3)"
+                  : "0 0 10px rgba(0,0,0,0.05)",
+                letterSpacing: "0.2em",
+              }}
+            >
+              {currentText.mainTitle}
+            </h1>
           </div>
 
-          {/* Main Subtitle - Bottom - MADE BIGGER AND BOLDER */}
+          {/* Main Subtitle */}
           <div
             className="absolute bottom-12 md:bottom-16 left-1/2 pointer-events-none"
             style={{
@@ -471,42 +538,23 @@ const HeaderFrame = ({isDarkMode}) => {
             }}
           >
             <h1
-  className={`text-8xl md:text-[12rem] lg:text-[14rem] xl:text-[16rem] font-black tracking-widest text-center ${
-    isDarkMode
-      ? "bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
-      : ""
-  }`}
-  style={{
-    color: isDarkMode ? undefined : "#454547",
-    fontWeight: 900,
-    textShadow: isDarkMode
-      ? "0 0 20px rgba(255,255,255,0.3)"
-      : "0 0 10px rgba(0,0,0,0.05)",
-    letterSpacing: "0.2em",
-  }}
->
-  {currentText.mainSubtitle}
-</h1>
-
-          </div>
-
-          {/* Loading indicator - full screen */}
-          {!imagesLoaded && (
-            <div
-              className="absolute inset-0 flex items-center justify-center bg-opacity-80 z-50"
-              style={{ backgroundColor: isDarkMode ? '#000' : '#FFF' }}
+              className={`text-8xl md:text-[12rem] lg:text-[14rem] xl:text-[16rem] font-black tracking-widest text-center ${
+                isDarkMode
+                  ? "bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+                  : ""
+              }`}
+              style={{
+                color: isDarkMode ? undefined : "#454547",
+                fontWeight: 900,
+                textShadow: isDarkMode
+                  ? "0 0 20px rgba(255,255,255,0.3)"
+                  : "0 0 10px rgba(0,0,0,0.05)",
+                letterSpacing: "0.2em",
+              }}
             >
-              <div className="text-center">
-                <h2
-                  className={`text-4xl font-bold ${themeValues.textColor}`}>
-                  Loading...
-                </h2>
-                <p className={`mt-2 ${themeValues.textColor}`}>
-                  Please wait while we prepare the experience.
-                </p>
-              </div>
-            </div>
-          )}
+              {currentText.mainSubtitle}
+            </h1>
+          </div>
         </div>
       </div>
     </div>
