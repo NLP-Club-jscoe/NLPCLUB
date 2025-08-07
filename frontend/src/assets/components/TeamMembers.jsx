@@ -98,7 +98,7 @@ const initialTeamMembers = [
       "vaidehi.jpg",
     social: {
       github: "https://github.com/VAIDEHI-28",
-      linkedin: "https://linkedin.com/in/vaidehi-amrutkar-419b02293",
+      linkedin: "https://linkedin.com/in/vaidehi-amrutkar-37bba0342",
     },
   },
   {
