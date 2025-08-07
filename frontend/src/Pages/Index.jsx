@@ -120,18 +120,19 @@ const SimpleLoadingSpinner = memo(() => {
 
         {/* Animated fill text (clipped from bottom to top) */}
         <h1
-          className="text-8xl md:text-9xl lg:text-[12rem] font-black tracking-wider absolute top-0 left-0 pointer-events-none select-none"
-          style={{
-            fontFamily: "StencilFont",
-            lineHeight: '0.9',
-            color: '#3E3F29',
-            clipPath: `inset(${100 - progress}% 0 0 0)`,
-            transition: "clip-path 0.2s ease-out",
-          }}
-          aria-hidden="true"
-        >
-          NLP CLUB
-        </h1>
+  className="text-8xl md:text-9xl lg:text-[12rem] font-black tracking-wider absolute top-0 left-0 pointer-events-none select-none
+             bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+  style={{
+    fontFamily: "StencilFont",
+    lineHeight: '0.9',
+    clipPath: `inset(${100 - progress}% 0 0 0)`,
+    transition: "clip-path 0.2s ease-out",
+  }}
+  aria-hidden="true"
+>
+  NLP CLUB
+</h1>
+
       </div>
 
       {/* Loading percentage - same style as 2nd code */}
