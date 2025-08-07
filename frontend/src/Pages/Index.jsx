@@ -33,7 +33,7 @@ const Footer = lazy(() =>
 // Constants
 const MIN_LOADING_TIME = 2000;
 
-// Simple Loading Animation Component (with same font and theme as 2nd code)
+// Simple Loading Animation Component
 const SimpleLoadingSpinner = memo(() => {
   const [progress, setProgress] = useState(0);
 
@@ -46,12 +46,11 @@ const SimpleLoadingSpinner = memo(() => {
         }
         return prev + 1;
       });
-    }, 30); // Adjust speed here
+    }, 30);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Same text style as the complex loader
   const textStyle = useMemo(() => ({
     fontFamily: "StencilFont",
     lineHeight: '0.9',
@@ -61,10 +60,8 @@ const SimpleLoadingSpinner = memo(() => {
   }), []);
 
   return (
-    <div className="fixed inset-0 z-50 h-screen w-screen bg-black flex items-center justify-center overflow-hidden">
-      {/* Enhanced flowing water background based on progress - same as 2nd code */}
+    <div className="fixed inset-0 z-[99998] h-screen w-screen bg-black flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
-        {/* Primary flowing wave */}
         <div 
           className="absolute inset-0 opacity-30"
           style={{
@@ -77,7 +74,6 @@ const SimpleLoadingSpinner = memo(() => {
           }}
         />
         
-        {/* Secondary flowing layer */}
         <div 
           className="absolute inset-0 opacity-20"
           style={{
@@ -90,7 +86,6 @@ const SimpleLoadingSpinner = memo(() => {
           }}
         />
 
-        {/* Animated flowing particles */}
         {[...Array(30)].map((_, i) => (
           <div
             key={i}
@@ -109,7 +104,6 @@ const SimpleLoadingSpinner = memo(() => {
       </div>
 
       <div className="relative z-10 leading-none">
-        {/* Background text with stroke (same as 2nd code) */}
         <h1
           className="text-8xl md:text-9xl lg:text-[12rem] font-black tracking-wider pointer-events-none select-none"
           style={textStyle}
@@ -118,24 +112,21 @@ const SimpleLoadingSpinner = memo(() => {
           NLP CLUB
         </h1>
 
-        {/* Animated fill text (clipped from bottom to top) */}
         <h1
-  className="text-8xl md:text-9xl lg:text-[12rem] font-black tracking-wider absolute top-0 left-0 pointer-events-none select-none
-             bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
-  style={{
-    fontFamily: "StencilFont",
-    lineHeight: '0.9',
-    clipPath: `inset(${100 - progress}% 0 0 0)`,
-    transition: "clip-path 0.2s ease-out",
-  }}
-  aria-hidden="true"
->
-  NLP CLUB
-</h1>
-
+          className="text-8xl md:text-9xl lg:text-[12rem] font-black tracking-wider absolute top-0 left-0 pointer-events-none select-none
+                     bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+          style={{
+            fontFamily: "StencilFont",
+            lineHeight: '0.9',
+            clipPath: `inset(${100 - progress}% 0 0 0)`,
+            transition: "clip-path 0.2s ease-out",
+          }}
+          aria-hidden="true"
+        >
+          NLP CLUB
+        </h1>
       </div>
 
-      {/* Loading percentage - same style as 2nd code */}
       <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2">
         <p 
           className="text-2xl md:text-3xl font-light tracking-wide text-white/80"
@@ -145,7 +136,6 @@ const SimpleLoadingSpinner = memo(() => {
         </p>
       </div>
 
-      {/* Animation styles - same as 2nd code */}
       <style jsx>{`
         @keyframes flowUp {
           0% {
@@ -170,17 +160,15 @@ const SimpleLoadingSpinner = memo(() => {
 
 SimpleLoadingSpinner.displayName = 'SimpleLoadingSpinner';
 
-// Memoized theme values
 const createThemeValues = (isDarkMode) => ({
   buttonBg: isDarkMode
-    ? "bg-white/10 hover:bg-white/20 text-white"
-    : "bg-black text-white hover:bg-gray-800",
+    ? "bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm border border-white/20"
+    : "bg-black/10 hover:bg-black/20 text-gray-900 backdrop-blur-sm border border-black/20",
   mainBg: isDarkMode
     ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
     : "bg-gradient-to-br from-gray-50 via-white to-gray-100",
 });
 
-// Section Loader
 const SectionLoader = memo(({ isDarkMode }) => (
   <div className={`flex items-center justify-center py-20 transition-all duration-300 ${
     isDarkMode ? 'bg-gray-900/50' : 'bg-gray-50/50'
@@ -204,15 +192,14 @@ const SectionLoader = memo(({ isDarkMode }) => (
 
 SectionLoader.displayName = 'SectionLoader';
 
-// Theme toggle icons
 const SunIcon = memo(() => (
-  <svg className="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg className="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
   </svg>
 ));
 
 const MoonIcon = memo(() => (
-  <svg className="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg className="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
   </svg>
 ));
@@ -220,7 +207,6 @@ const MoonIcon = memo(() => (
 SunIcon.displayName = 'SunIcon';
 MoonIcon.displayName = 'MoonIcon';
 
-// Main component
 const Index = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -232,16 +218,14 @@ const Index = () => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  // Handle loading completion
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, MIN_LOADING_TIME + 3000); // 3 seconds for animation + minimum time
+    }, MIN_LOADING_TIME + 3000);
 
     return () => clearTimeout(timer);
   }, []);
 
-  // Memoized theme toggle function
   const toggleTheme = useCallback(() => {
     setIsDarkMode(prev => {
       const newMode = !prev;
@@ -252,53 +236,48 @@ const Index = () => {
     });
   }, []);
 
-  // Memoized theme values
   const themeValues = useMemo(() => createThemeValues(isDarkMode), [isDarkMode]);
 
-  // Memoized section loader
   const sectionLoader = useMemo(() => 
     <SectionLoader isDarkMode={isDarkMode} />, 
     [isDarkMode]
   );
 
-  // Show simple loader
   if (isLoading) {
     return <SimpleLoadingSpinner />;
   }
 
   return (
-    <div
-      className={`min-h-screen transition-all duration-500 ${themeValues.mainBg}`}
-      style={{ fontFamily: "StencilFont" }}
-    >
-      {/* Theme Toggle Button */}
-      <button
-        onClick={toggleTheme}
-        className={`fixed top-20 right-6 z-50 p-3 rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:rotate-180 ${themeValues.buttonBg}`}
-        aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-        type="button"
-      >
-        {isDarkMode ? <SunIcon /> : <MoonIcon />}
-      </button>
-
-      {/* Main Content */}
-      <div className="animate-fadeIn">
-        <Header isDarkMode={isDarkMode} />
-        <Head isDarkMode={isDarkMode} />
+    <>
+      {/* CSS Reset and Global Styles - This ensures navbar positioning works */}
+      <style jsx global>{`
+        * {
+          box-sizing: border-box;
+        }
         
-        <Suspense fallback={sectionLoader}>
-          <div className="space-y-0">
-            <AboutUsSection isDarkMode={isDarkMode} />
-            <ProjectsSection isDarkMode={isDarkMode} />
-            <NlpClubGallery isDarkMode={isDarkMode} />
-            <Mentors isDarkMode={isDarkMode} />
-            <TeamMembers isDarkMode={isDarkMode} />
-            <Footer isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
-          </div>
-        </Suspense>
-      </div>
-
-      <style jsx>{`
+        html, body {
+          margin: 0;
+          padding: 0;
+          position: relative;
+        }
+        
+        /* Force navbar to stay fixed - override any conflicting styles */
+        .navbar-container {
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          z-index: 99999 !important;
+          width: 100% !important;
+        }
+        
+        /* Ensure no parent containers interfere */
+        .main-container {
+          position: relative;
+          width: 100%;
+          min-height: 100vh;
+        }
+        
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -314,7 +293,55 @@ const Index = () => {
           animation: fadeIn 0.8s ease-out forwards;
         }
       `}</style>
-    </div>
+
+      <div
+        className={`main-container transition-all duration-500 ${themeValues.mainBg}`}
+        style={{ fontFamily: "StencilFont" }}
+      >
+        {/* Header with forced positioning class */}
+        <div className="navbar-container">
+          <Header isDarkMode={isDarkMode} />
+        </div>
+
+        {/* Theme Toggle Button - positioned relative to viewport, not header */}
+        <button
+          onClick={toggleTheme}
+          className={`fixed top-24 right-4 md:right-6 z-[99998] p-2.5 rounded-full shadow-lg transition-all duration-300 hover:scale-110 hover:rotate-12 ${themeValues.buttonBg}`}
+          aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+          type="button"
+        >
+          {isDarkMode ? <SunIcon /> : <MoonIcon />}
+        </button>
+
+        {/* Main Content - no padding, let Head component handle spacing */}
+        <div className="animate-fadeIn">
+          <Head isDarkMode={isDarkMode} />
+          
+          <Suspense fallback={sectionLoader}>
+            <div className="space-y-0">
+              <div id="about">
+                <AboutUsSection isDarkMode={isDarkMode} />
+              </div>
+              <div id="projects">
+                <ProjectsSection isDarkMode={isDarkMode} />
+              </div>
+              <div id="team">
+                <NlpClubGallery isDarkMode={isDarkMode} />
+              </div>
+              <div id="mentors">
+                <Mentors isDarkMode={isDarkMode} />
+              </div>
+              <div id="members">
+                <TeamMembers isDarkMode={isDarkMode} />
+              </div>
+              <div id="contact">
+                <Footer isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+              </div>
+            </div>
+          </Suspense>
+        </div>
+      </div>
+    </>
   );
 };
 
