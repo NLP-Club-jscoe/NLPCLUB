@@ -95,7 +95,7 @@ const initialTeamMembers = [
     role: "ML Developer",
     bio: "AI & ML enthusiast driven by innovation, passionate about solving real-world problems through intelligent solutions. Skilled in Data Structures and Algorithms, continuously learning and building impactful projects that push boundaries.",
     image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face",
+      "vaidehi.jpg",
     social: {
       github: "https://github.com/VAIDEHI-28",
       linkedin: "https://linkedin.com/in/vaidehi-amrutkar-419b02293",
